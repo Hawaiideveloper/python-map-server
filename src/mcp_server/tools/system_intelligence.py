@@ -275,7 +275,7 @@ def smart_debug_assistance(code: str, error_message: str = "") -> Dict[str, Any]
 
 @log_tool_execution("project_scaffold")
 def create_project_scaffold(project_name: str, project_type: str = "basic", 
-                          features: List[str] = None) -> Dict[str, Any]:
+                          features: Optional[List[str]] = None) -> Dict[str, Any]:
     """
     Create intelligent project scaffolding with best practices.
     

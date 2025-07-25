@@ -6,7 +6,7 @@ understand the expected data structures and function signatures throughout
 the codebase.
 """
 
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List, Union, Callable
 from dataclasses import dataclass
 from enum import Enum
 
@@ -87,7 +87,7 @@ class CloudRequest:
     provider: str  # aws, gcp, azure
     
 # MCP tool function type
-MCPTool = callable[[...], MCPResponse]
+MCPTool = Callable[..., MCPResponse]
 
 # Common error response structure
 def error_response(error: str, traceback: Optional[str] = None) -> MCPResponse:

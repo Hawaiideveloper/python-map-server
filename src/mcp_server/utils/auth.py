@@ -8,7 +8,7 @@ session management for multi-user scenarios.
 import time
 import hashlib
 import secrets
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, DefaultDict
 from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from fastapi import HTTPException, Depends, Header
@@ -21,23 +21,24 @@ class RateLimiter:
     def __init__(self, requests_per_minute: int = 60, burst_limit: int = 10):
         self.requests_per_minute = requests_per_minute
         self.burst_limit = burst_limit
-        self.clients = defaultdict(lambda: {
+        self.clients: DefaultDict[str, Dict[str, Any]] = defaultdict(lambda: {
             "requests": deque(),
-            "last_request": 0
+            "last_request": 0.0
         })
     
     def is_allowed(self, client_id: str) -> bool:
         """Check if client is allowed to make a request."""
         now = time.time()
-        client_data = self.clients[client_id]
+        client_data = self.clients[client_id]  # Dict with 'requests' deque and 'last_request' float
         
         # Clean old requests (older than 1 minute)
         minute_ago = now - 60
-        while client_data["requests"] and client_data["requests"][0] < minute_ago:
-            client_data["requests"].popleft()
+        requests_deque = client_data["requests"]
+        while requests_deque and requests_deque[0] < minute_ago:
+            requests_deque.popleft()
         
         # Check rate limits
-        request_count = len(client_data["requests"])
+        request_count = len(requests_deque)
         
         # Check burst limit
         if request_count >= self.burst_limit:
