@@ -1,6 +1,6 @@
 
-import pytest
-from mcp_server.tools import run_code, lint_code, format_code
+from mcp_server.tools import format_code, lint_code, run_code
+
 
 def test_run_code():
     code = "print('Hello World')"

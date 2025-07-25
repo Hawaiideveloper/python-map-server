@@ -75,7 +75,7 @@ def ai_chat(prompt: str, model: str = "gpt-3.5-turbo", provider: str = "openai")
                 elif hasattr(content_block, 'text') and getattr(content_block, 'type', None) != 'tool_use':
                     response_text = getattr(content_block, 'text', '')
                     break
-            
+
             if not response_text and response.content:
                 # Last resort: convert to string
                 response_text = str(response.content[0])
@@ -467,7 +467,9 @@ def analyze_text(text: str, analysis_type: str = "sentiment") -> dict[str, Any]:
         elif analysis_type == "keywords":
             try:
                 import numpy as np  # type: ignore
-                from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore
+                from sklearn.feature_extraction.text import (
+                    TfidfVectorizer,  # type: ignore
+                )
             except ImportError:
                 return {
                     "status": "error",

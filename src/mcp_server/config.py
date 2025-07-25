@@ -6,8 +6,8 @@ and provides default values for the server and tools.
 """
 
 import os
-from typing import Optional, Dict, Any
 from pathlib import Path
+from typing import Any, Optional
 
 # Base directories
 BASE_DIR = Path(__file__).parent.parent.parent.absolute()
@@ -132,11 +132,11 @@ TOOL_CONFIGS = {
 def get_config(key: str, default: Any = None) -> Any:
     """
     Get configuration value by key.
-    
+
     Args:
         key: Configuration key (dot notation supported)
         default: Default value if key not found
-        
+
     Returns:
         Configuration value
     """
@@ -150,13 +150,13 @@ def get_config(key: str, default: Any = None) -> Any:
             else:
                 return default
         return value
-    
+
     return globals().get(key.upper(), default)
 
-def validate_required_keys() -> Dict[str, bool]:
+def validate_required_keys() -> dict[str, bool]:
     """
     Validate that required configuration keys are set.
-    
+
     Returns:
         Dict with validation results
     """
@@ -165,17 +165,17 @@ def validate_required_keys() -> Dict[str, bool]:
         "jwt_secret_key": JWT_SECRET_KEY != "fallback-secret-key-change-in-production",
         "database_configured": bool(DATABASE_URL)
     }
-    
+
     return validations
 
-def get_database_config() -> Dict[str, str]:
+def get_database_config() -> dict[str, str]:
     """Get database configuration details."""
     return {
         "url": DATABASE_URL,
         "driver": DATABASE_URL.split("://")[0] if "://" in DATABASE_URL else "sqlite"
     }
 
-def get_cloud_config() -> Dict[str, Dict[str, Optional[str]]]:
+def get_cloud_config() -> dict[str, dict[str, Optional[str]]]:
     """Get cloud provider configurations."""
     return {
         "aws": {
@@ -192,7 +192,7 @@ def get_cloud_config() -> Dict[str, Dict[str, Optional[str]]]:
         }
     }
 
-def get_vector_db_config() -> Dict[str, Dict[str, str]]:
+def get_vector_db_config() -> dict[str, dict[str, str]]:
     """Get vector database configurations."""
     return {
         "chroma": {
@@ -206,7 +206,7 @@ def get_vector_db_config() -> Dict[str, Dict[str, str]]:
         }
     }
 
-# Legacy compatibility - keep existing constants for backward compatibility  
+# Legacy compatibility - keep existing constants for backward compatibility
 MAX_OUTPUT_LENGTH = MAX_OUTPUT_SIZE
 DEFAULT_TIMEOUT = MAX_EXECUTION_TIME
 PROJECT_ROOT = BASE_DIR
@@ -218,7 +218,7 @@ MAX_CODE_LENGTH = 10000
 # Tool names (for MCP registration)
 class ToolNames:
     RUN_CODE = "run_python"
-    LINT_CODE = "lint_python" 
+    LINT_CODE = "lint_python"
     FORMAT_CODE = "format_python"
     TEST_CODE = "test_python"
     GENERATE_DOCS = "generate_docs"
@@ -255,14 +255,14 @@ class EnvVars:
     AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY"
     AWS_REGION = "AWS_REGION"
-    
+
     # GCP
     GCP_PROJECT = "GCP_PROJECT"
     GCP_CREDENTIALS_PATH = "GCP_CREDENTIALS_PATH"
-    
+
     # Azure
     AZURE_STORAGE_CONNECTION_STRING = "AZURE_STORAGE_CONNECTION_STRING"
-    
+
     # AI/LLM
     OPENAI_API_KEY = "OPENAI_API_KEY"
     ANTHROPIC_API_KEY = "ANTHROPIC_API_KEY"

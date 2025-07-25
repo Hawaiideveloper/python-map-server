@@ -1,8 +1,9 @@
 
 import subprocess
+import sys
 import tempfile
 import traceback
-import sys
+
 
 def run_python(code: str):
     """

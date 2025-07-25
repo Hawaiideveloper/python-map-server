@@ -1,11 +1,12 @@
 
 import os
+import traceback
+
 import boto3
+from azure.storage.blob import BlobServiceClient
 from botocore.exceptions import ClientError
 from google.cloud import storage
-from azure.storage.blob import BlobServiceClient
 
-import traceback
 
 def aws_upload_s3(bucket: str, key: str, file_path: str):
     """

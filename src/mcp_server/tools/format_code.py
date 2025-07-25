@@ -2,6 +2,7 @@
 import subprocess
 import tempfile
 
+
 def format_python(code: str):
     """
     Format Python code using black and return formatted code.

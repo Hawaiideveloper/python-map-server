@@ -5,25 +5,25 @@ This module provides administrative endpoints for system monitoring,
 user management, and server configuration.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import Response, JSONResponse, HTMLResponse
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
+from typing import Any, Optional
 
-from mcp_server.utils.auth import authenticate_request, api_key_manager, usage_tracker
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import HTMLResponse
+
+from mcp_server.utils.auth import api_key_manager, authenticate_request, usage_tracker
 from mcp_server.utils.database import db_manager
-from mcp_server.utils.logging import metrics, get_system_status, health_check
+from mcp_server.utils.logging import get_system_status, health_check, metrics
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
-def require_admin_auth(auth_info: Dict[str, Any] = Depends(lambda: authenticate_request(operation="admin"))):
+def require_admin_auth(auth_info: dict[str, Any] = Depends(lambda: authenticate_request(operation="admin"))):
     """Require admin authentication."""
     if "*" not in auth_info.get("permissions", []) and "admin" not in auth_info.get("permissions", []):
         raise HTTPException(status_code=403, detail="Admin access required")
     return auth_info
 
 @admin_router.get("/dashboard")
-async def admin_dashboard(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def admin_dashboard(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """Get admin dashboard data."""
     return HTMLResponse(content="""
     <!DOCTYPE html>
@@ -53,46 +53,46 @@ async def admin_dashboard(auth_info: Dict[str, Any] = Depends(require_admin_auth
     <body>
         <div class="container">
             <h1>MCP Server Admin Dashboard</h1>
-            
+
             <div class="card">
                 <h2>System Status</h2>
                 <div id="system-status">Loading...</div>
             </div>
-            
+
             <div class="card">
                 <h2>Key Metrics</h2>
                 <div class="grid" id="metrics-grid">Loading...</div>
             </div>
-            
+
             <div class="card">
                 <h2>Recent API Keys</h2>
                 <div id="api-keys">Loading...</div>
             </div>
-            
+
             <div class="card">
                 <h2>Usage Statistics</h2>
                 <div id="usage-stats">Loading...</div>
             </div>
-            
+
             <div class="card">
                 <h2>Security Events</h2>
                 <div id="security-events">Loading...</div>
             </div>
         </div>
-        
+
         <script>
             async function loadDashboardData() {
                 try {
                     // Load system status
                     const statusResponse = await fetch('/admin/system/status');
                     const statusData = await statusResponse.json();
-                    document.getElementById('system-status').innerHTML = 
+                    document.getElementById('system-status').innerHTML =
                         `<span class="status-${statusData.status}">${statusData.status.toUpperCase()}</span>`;
-                    
+
                     // Load metrics
                     const metricsResponse = await fetch('/admin/metrics');
                     const metricsData = await metricsResponse.json();
-                    
+
                     const metricsGrid = document.getElementById('metrics-grid');
                     metricsGrid.innerHTML = `
                         <div class="metric">
@@ -112,11 +112,11 @@ async def admin_dashboard(auth_info: Dict[str, Any] = Depends(require_admin_auth
                             <div class="value">${metricsData.security_violations}</div>
                         </div>
                     `;
-                    
+
                     // Load API keys
                     const keysResponse = await fetch('/admin/api-keys');
                     const keysData = await keysResponse.json();
-                    
+
                     let keysHtml = '<table><tr><th>Key (partial)</th><th>Name</th><th>Permissions</th><th>Last Used</th><th>Requests</th></tr>';
                     for (const [key, info] of Object.entries(keysData)) {
                         keysHtml += `
@@ -131,15 +131,15 @@ async def admin_dashboard(auth_info: Dict[str, Any] = Depends(require_admin_auth
                     }
                     keysHtml += '</table>';
                     document.getElementById('api-keys').innerHTML = keysHtml;
-                    
+
                 } catch (error) {
                     console.error('Error loading dashboard data:', error);
                 }
             }
-            
+
             // Load data on page load
             loadDashboardData();
-            
+
             // Refresh every 30 seconds
             setInterval(loadDashboardData, 30000);
         </script>
@@ -148,25 +148,25 @@ async def admin_dashboard(auth_info: Dict[str, Any] = Depends(require_admin_auth
     """)
 
 @admin_router.get("/system/status")
-async def system_status(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def system_status(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """Get system health status."""
     return health_check()
 
 @admin_router.get("/metrics")
-async def get_metrics(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def get_metrics(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """Get system metrics."""
     return metrics.get_metrics()
 
 @admin_router.get("/api-keys")
-async def list_api_keys(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def list_api_keys(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """List all API keys."""
     return api_key_manager.list_api_keys()
 
 @admin_router.post("/api-keys")
 async def create_api_key(
     name: str,
-    permissions: List[str],
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    permissions: list[str],
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Create a new API key."""
     api_key = api_key_manager.create_api_key(name, permissions)
@@ -175,7 +175,7 @@ async def create_api_key(
 @admin_router.delete("/api-keys/{key_prefix}")
 async def revoke_api_key(
     key_prefix: str,
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Revoke an API key by prefix."""
     # In a real implementation, you'd need to find the full key by prefix
@@ -188,7 +188,7 @@ async def revoke_api_key(
 @admin_router.get("/usage-stats")
 async def get_usage_stats(
     days: int = Query(7, description="Number of days to look back"),
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Get usage statistics."""
     return usage_tracker.get_all_usage_stats()
@@ -197,7 +197,7 @@ async def get_usage_stats(
 async def get_execution_history(
     user_id: Optional[int] = Query(None, description="Filter by user ID"),
     limit: int = Query(100, description="Number of records to return"),
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Get execution history."""
     if user_id:
@@ -210,7 +210,7 @@ async def get_execution_history(
 async def get_security_events(
     days: int = Query(7, description="Number of days to look back"),
     user_id: Optional[int] = Query(None, description="Filter by user ID"),
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Get security events."""
     return db_manager.get_security_events(user_id, days)
@@ -218,7 +218,7 @@ async def get_security_events(
 @admin_router.post("/system/cleanup")
 async def cleanup_old_data(
     days: int = Query(90, description="Delete data older than this many days"),
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Clean up old data."""
     db_manager.cleanup_old_data(days)
@@ -228,23 +228,22 @@ async def cleanup_old_data(
 async def get_logs(
     log_name: str,
     lines: int = Query(100, description="Number of lines to return"),
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """Get log files."""
-    import os
     from pathlib import Path
-    
+
     log_path = Path("logs") / f"{log_name}.log"
-    
+
     if not log_path.exists():
         raise HTTPException(status_code=404, detail="Log file not found")
-    
+
     try:
-        with open(log_path, 'r') as f:
+        with open(log_path) as f:
             # Read last N lines
             all_lines = f.readlines()
             recent_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
-            
+
         return {
             "log_name": log_name,
             "lines": recent_lines,
@@ -254,14 +253,20 @@ async def get_logs(
         raise HTTPException(status_code=500, detail=f"Error reading log file: {str(e)}")
 
 @admin_router.get("/config")
-async def get_server_config(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def get_server_config(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """Get current server configuration."""
     from mcp_server.config import (
-        HTTP_HOST, HTTP_PORT, MCP_DEBUG, DEVELOPMENT_MODE,
-        API_RATE_LIMIT, API_RATE_LIMIT_WINDOW,
-        AWS_REGION, GCP_PROJECT, DATABASE_URL
+        API_RATE_LIMIT,
+        API_RATE_LIMIT_WINDOW,
+        AWS_REGION,
+        DATABASE_URL,
+        DEVELOPMENT_MODE,
+        GCP_PROJECT,
+        HTTP_HOST,
+        HTTP_PORT,
+        MCP_DEBUG,
     )
-    
+
     config = {
         "server": {
             "host": HTTP_HOST,
@@ -281,45 +286,44 @@ async def get_server_config(auth_info: Dict[str, Any] = Depends(require_admin_au
             "url": DATABASE_URL.split("://")[0] + "://***" if "://" in DATABASE_URL else "***"
         }
     }
-    
+
     # Sanitize sensitive information
     sanitized_config = {}
     for key, value in config.items():
         if key in ["aws", "gcp", "azure"]:
             # Hide sensitive credentials
-            sanitized_config[key] = {k: "***" if "key" in k.lower() or "secret" in k.lower() 
+            sanitized_config[key] = {k: "***" if "key" in k.lower() or "secret" in k.lower()
                                    else v for k, v in value.items()}
         else:
             sanitized_config[key] = value
-    
+
     return sanitized_config
 
 @admin_router.post("/system/restart")
-async def restart_server(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def restart_server(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """Restart the server (development only)."""
-    import os
-    import signal
-    
+
     # In production, this would trigger a proper restart mechanism
     return {"message": "Restart signal sent", "warning": "This is a development feature"}
 
 @admin_router.get("/users")
 async def list_users(
     limit: int = Query(100, description="Number of users to return"),
-    auth_info: Dict[str, Any] = Depends(require_admin_auth)
+    auth_info: dict[str, Any] = Depends(require_admin_auth)
 ):
     """List users (requires database)."""
     # This would require implementing user listing in database manager
     return {"message": "User listing not implemented yet"}
 
 @admin_router.get("/system/info")
-async def system_info(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def system_info(auth_info: dict[str, Any] = Depends(require_admin_auth)):
     """Get detailed system information."""
-    import sys
-    import platform
-    import psutil
     import os
-    
+    import platform
+    import sys
+
+    import psutil
+
     return {
         "python_version": sys.version,
         "platform": platform.platform(),

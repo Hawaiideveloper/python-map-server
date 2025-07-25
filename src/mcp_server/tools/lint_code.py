@@ -2,6 +2,7 @@
 import subprocess
 import tempfile
 
+
 def lint_python(code: str):
     """
     Lint Python code using ruff and return the lint messages.

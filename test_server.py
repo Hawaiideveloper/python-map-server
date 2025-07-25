@@ -8,13 +8,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from mcp_server.tools.run_code import run_python
-    from mcp_server.tools.lint_code import lint_python
-    from mcp_server.tools.format_code import format_python
     from mcp_server.server import mcp_server
-    
+    from mcp_server.tools.format_code import format_python
+    from mcp_server.tools.lint_code import lint_python
+    from mcp_server.tools.run_code import run_python
+
     print("✅ All imports successful!")
-    
+
     # Test basic functionality
     test_code = '''
 def hello():
@@ -23,25 +23,25 @@ def hello():
 
 result = hello()
 '''
-    
+
     print("\n🧪 Testing core functionality...")
-    
+
     # Test code execution
     exec_result = run_python(test_code)
     print(f"Code execution: {'✅' if exec_result['status'] == 'success' else '❌'}")
-    
+
     # Test code linting
     lint_result = lint_python(test_code)
     print(f"Code linting: {'✅' if lint_result['status'] == 'success' else '❌'}")
-    
+
     # Test code formatting
     format_result = format_python(test_code)
     print(f"Code formatting: {'✅' if format_result['status'] == 'success' else '❌'}")
-    
+
     # Check registered tools
     print(f"\n📋 MCP Server: {type(mcp_server).__name__}")
     print("✅ Server setup complete!")
-    
+
     print("""
 🚀 Python MCP Server is ready!
 

@@ -1,8 +1,7 @@
 
-import os
 
 def safe_read_file(path: str) -> str:
-    with open(path, "r") as f:
+    with open(path) as f:
         return f.read()
 
 def safe_write_file(path: str, content: str):
