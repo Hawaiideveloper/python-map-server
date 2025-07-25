@@ -482,7 +482,7 @@ def analyze_text(text: str, analysis_type: str = "sentiment") -> dict[str, Any]:
             tfidf_matrix = vectorizer.fit_transform([text])
 
             feature_names = vectorizer.get_feature_names_out()
-            scores = tfidf_matrix.toarray()[0]
+            scores = tfidf_matrix.toarray()[0]  # type: ignore[attr-defined]
 
             keywords = [(feature_names[i], scores[i]) for i in np.argsort(scores)[::-1] if scores[i] > 0]
 

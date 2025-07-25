@@ -831,11 +831,12 @@ def get_repo_size(repo_path: Path) -> str:
 
 def format_bytes(bytes_value: int) -> str:
     """Format bytes to human readable string"""
+    value = float(bytes_value)
     for unit in ['B', 'KB', 'MB', 'GB']:
-        if bytes_value < 1024.0:
-            return f"{bytes_value:.1f} {unit}"
-        bytes_value /= 1024.0
-    return f"{bytes_value:.1f} TB"
+        if value < 1024.0:
+            return f"{value:.1f} {unit}"
+        value /= 1024.0
+    return f"{value:.1f} TB"
 
 if __name__ == "__main__":
     main()
