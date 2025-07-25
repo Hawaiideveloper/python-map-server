@@ -1,0 +1,158 @@
+name: Python Code Quality & Compliance
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📋 Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: 📦 Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: 🔧 Install MCP Server
+      run: |
+        # Clone the MCP server (replace with actual repository URL)
+        git clone https://github.com/your-org/python-mcp-server.git /tmp/mcp-server
+        cd /tmp/mcp-server
+        poetry install
+    
+    - name: 🚀 Start MCP Server
+      run: |
+        cd /tmp/mcp-server
+        # Start server in background
+        poetry run python -m mcp_server.server &
+        sleep 10  # Wait for server to start
+        echo "MCP_SERVER_PID=$!" >> $GITHUB_ENV
+      env:
+        MCP_SERVER_PORT: 8080
+    
+    - name: 🔍 Run Code Quality Analysis
+      run: |
+        cd /tmp/mcp-server
+        poetry run python .github/scripts/analyze-repo.py "${{ github.workspace }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO_PATH: ${{ github.workspace }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_REF: ${{ github.ref }}
+    
+    - name: 📊 Upload Quality Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: code-quality-report
+        path: |
+          quality-report.json
+          quality-summary.md
+    
+    - name: 💬 Comment PR Results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          try {
+            const report = JSON.parse(fs.readFileSync('quality-report.json', 'utf8'));
+            
+            const getStatusEmoji = (score, threshold) => score >= threshold ? '✅' : score >= threshold * 0.8 ? '⚠️' : '❌';
+            const getScoreColor = (score) => score >= 80 ? '🟢' : score >= 60 ? '🟡' : '🔴';
+            
+            const comment = `## 🔍 Code Quality Report
+            
+            ### ${getScoreColor(report.overall_score)} Overall Score: ${report.overall_score}/100
+            
+            | Metric | Score | Status | Details |
+            |--------|-------|--------|---------|
+            | 🐛 Lint Issues | ${report.lint_issues} | ${report.lint_issues === 0 ? '✅' : '❌'} | ${report.lint_issues === 0 ? 'No issues found' : 'Issues detected'} |
+            | 🏷️ Type Coverage | ${report.type_coverage}% | ${getStatusEmoji(report.type_coverage, 80)} | ${report.type_coverage >= 80 ? 'Good coverage' : 'Needs improvement'} |
+            | 🧪 Test Coverage | ${report.test_coverage}% | ${getStatusEmoji(report.test_coverage, 80)} | ${report.test_coverage >= 80 ? 'Well tested' : 'Add more tests'} |
+            | 📚 Documentation | ${report.doc_coverage}% | ${getStatusEmoji(report.doc_coverage, 70)} | ${report.doc_coverage >= 70 ? 'Well documented' : 'Add docstrings'} |
+            
+            ### 🤖 AI-Powered Insights
+            ${report.ai_suggestions && report.ai_suggestions.length > 0 
+              ? report.ai_suggestions.slice(0, 3).map(s => `- ${s}`).join('\n')
+              : '- No specific suggestions at this time'}
+            
+            ### 🔒 Security Analysis
+            ${report.security_issues && report.security_issues.length === 0 
+              ? '✅ No security issues detected' 
+              : `❌ ${report.security_issues.length} security issue(s) found`}
+            
+            ### 📈 Quality Trend
+            ${report.overall_score >= 85 ? '🚀 Excellent code quality!' 
+              : report.overall_score >= 70 ? '👍 Good code quality' 
+              : '🔧 Room for improvement'}
+            
+            ---
+            *Quality analysis powered by Python MCP Server* | [View detailed report](${context.payload.pull_request.html_url}/checks)`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+            
+          } catch (error) {
+            console.log('Could not post comment:', error.message);
+            
+            // Fallback simple comment
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔍 Code Quality Check\n\n✅ Analysis completed! Check the [workflow run](${context.payload.pull_request.html_url}/checks) for detailed results.`
+            });
+          }
+    
+    - name: 📈 Update Status Check
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          try {
+            const report = JSON.parse(fs.readFileSync('quality-report.json', 'utf8'));
+            const state = report.overall_score >= 70 ? 'success' : 'failure';
+            const description = `Quality Score: ${report.overall_score}/100`;
+            
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: state,
+              description: description,
+              context: 'Python Code Quality'
+            });
+          } catch (error) {
+            console.log('Could not update status:', error.message);
+          }
+    
+    - name: 🧹 Cleanup
+      if: always()
+      run: |
+        # Stop MCP server if it's running
+        if [ ! -z "$MCP_SERVER_PID" ]; then
+          kill $MCP_SERVER_PID || true
+        fi
+        # Clean up temporary files
+        rm -rf /tmp/mcp-server || true

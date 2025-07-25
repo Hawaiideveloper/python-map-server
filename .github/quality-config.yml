@@ -1,0 +1,203 @@
+# Python Code Quality CI/CD Configuration
+# Customize these settings for your repository's needs
+
+# Quality thresholds - adjust based on your project's maturity
+thresholds:
+  overall_score: 70          # Minimum overall score to pass CI
+  lint_issues: 5             # Maximum allowed lint issues
+  type_coverage: 60          # Minimum type coverage percentage
+  test_coverage: 70          # Minimum test coverage percentage
+  doc_coverage: 50           # Minimum documentation coverage
+  complexity_max: 10         # Maximum cyclomatic complexity per function
+
+# Analysis settings
+analysis:
+  ai_enabled: true           # Enable AI-powered code analysis
+  security_scan: true        # Run security vulnerability scanning
+  complexity_check: true     # Analyze code complexity
+  performance_hints: true    # Generate performance optimization suggestions
+  dependency_check: true     # Check for outdated/vulnerable dependencies
+  
+  # Advanced AI features (requires API keys)
+  deep_analysis: false       # Deep AI code review (slower but more detailed)
+  code_suggestions: true     # AI-generated code improvement suggestions
+  architecture_review: false # High-level architecture analysis
+
+# Reporting and notifications
+reporting:
+  comment_on_pr: true        # Post quality report as PR comment
+  fail_on_threshold: false   # Fail CI build if quality score below threshold
+  upload_artifacts: true     # Upload detailed reports as workflow artifacts
+  generate_badges: true      # Generate quality badges for README
+  
+  # Notification settings
+  slack_webhook: ""          # Slack webhook URL for notifications
+  teams_webhook: ""          # Microsoft Teams webhook URL
+  email_recipients: []       # Email addresses for quality reports
+  
+  # Report formats
+  formats:
+    - json                   # Machine-readable report
+    - markdown               # Human-readable summary
+    - html                   # Rich HTML report (future feature)
+    - badges                 # Shield.io compatible badges
+
+# File and directory exclusions
+exclude:
+  # Standard exclusions
+  directories:
+    - "__pycache__"
+    - ".git"
+    - ".venv"
+    - "venv"
+    - ".env"
+    - "node_modules"
+    - ".pytest_cache"
+    - ".mypy_cache"
+    - ".tox"
+    - "dist"
+    - "build"
+    - ".coverage"
+  
+  # Project-specific exclusions
+  files:
+    - "setup.py"             # Often auto-generated
+    - "conftest.py"          # Test configuration
+    - "manage.py"            # Django management script
+  
+  # Pattern-based exclusions
+  patterns:
+    - "*/migrations/*"       # Database migrations
+    - "*/tests/fixtures/*"   # Test fixtures
+    - "*/vendor/*"           # Third-party code
+    - "*_pb2.py"            # Protocol buffer generated files
+    - "*_generated.py"       # Auto-generated files
+
+# Tool-specific configurations
+tools:
+  # Linting configuration
+  lint:
+    tool: "ruff"             # Options: ruff, flake8, pylint
+    config_file: "pyproject.toml"  # Path to config file
+    auto_fix: false          # Automatically fix issues where possible
+    max_line_length: 88      # Maximum line length
+    
+    # Ruff-specific settings
+    ruff:
+      select: ["E", "W", "F", "I", "N", "UP", "S", "B", "A", "C4", "T20"]
+      ignore: ["E501"]       # Ignore specific rules
+      
+  # Type checking configuration  
+  typing:
+    tool: "mypy"             # Options: mypy, pyright, pyre
+    strict_mode: false       # Enable strict type checking
+    config_file: "mypy.ini"  # Path to mypy config
+    
+  # Testing configuration
+  testing:
+    framework: "pytest"      # Options: pytest, unittest, nose2
+    coverage_tool: "coverage.py"  # Options: coverage.py, pytest-cov
+    min_coverage: 70         # Minimum coverage threshold
+    coverage_fail_under: false  # Fail if coverage below threshold
+    
+  # Documentation
+  docs:
+    check_docstrings: true   # Verify docstring presence
+    docstring_style: "google"  # Options: google, numpy, sphinx
+    check_type_hints: true   # Verify type hints in docstrings
+    
+  # Security scanning
+  security:
+    tool: "bandit"           # Options: bandit, safety, semgrep
+    severity_threshold: "medium"  # Options: low, medium, high
+    confidence_threshold: "medium"
+
+# Framework-specific settings
+frameworks:
+  # Django settings
+  django:
+    check_migrations: true   # Check for pending migrations
+    check_settings: true     # Validate Django settings
+    security_checks: true    # Django-specific security checks
+    
+  # FastAPI settings
+  fastapi:
+    check_openapi: true      # Validate OpenAPI schema
+    check_dependencies: true # Check dependency injection
+    
+  # Flask settings
+  flask:
+    check_config: true       # Validate Flask configuration
+    security_headers: true   # Check security headers
+    
+  # Data Science settings
+  data_science:
+    check_notebooks: true    # Analyze Jupyter notebooks
+    data_validation: true    # Check data pipeline quality
+    model_validation: false  # ML model quality checks (experimental)
+
+# Performance and resource limits
+limits:
+  analysis_timeout: 300      # Maximum analysis time in seconds
+  max_file_size: 1048576    # Maximum file size to analyze (1MB)
+  max_files: 1000           # Maximum number of files to analyze
+  memory_limit: "2G"        # Memory limit for analysis processes
+
+# Custom rules and checks (advanced users)
+custom_rules:
+  # Define custom linting rules
+  lint_rules: []
+  
+  # Custom security patterns to detect
+  security_patterns:
+    - pattern: "password\\s*=\\s*['\"]\\w+['\"]"
+      message: "Hardcoded password detected"
+      severity: "high"
+      
+  # Custom complexity rules
+  complexity_rules:
+    max_function_length: 50  # Maximum lines per function
+    max_class_length: 500    # Maximum lines per class
+    max_module_length: 1000  # Maximum lines per module
+
+# CI/CD integration settings
+ci_integration:
+  # GitHub Actions specific
+  github:
+    create_status_check: true    # Create GitHub status check
+    status_check_name: "Python Code Quality"
+    update_pr_description: false # Add quality summary to PR description
+    
+  # GitLab CI specific  
+  gitlab:
+    create_merge_request_note: true
+    quality_gate: false      # Use GitLab quality gates
+    
+  # Jenkins specific
+  jenkins:
+    archive_reports: true    # Archive quality reports
+    publish_html_report: true # Publish HTML report
+    
+  # Generic CI settings
+  generic:
+    exit_code_on_failure: 1  # Exit code when quality checks fail
+    quiet_mode: false        # Reduce console output
+    verbose_mode: false      # Increase console output
+
+# API keys and authentication (use environment variables)
+api_keys:
+  openai_api_key: "${OPENAI_API_KEY}"           # For AI-powered analysis
+  anthropic_api_key: "${ANTHROPIC_API_KEY}"     # Alternative AI provider
+  github_token: "${GITHUB_TOKEN}"               # For GitHub integration
+  
+# Experimental features (may change in future versions)
+experimental:
+  ai_code_generation: false     # AI-generated code suggestions
+  auto_refactoring: false       # Automated code refactoring
+  dependency_updates: false     # Automated dependency updates
+  semantic_analysis: false      # Deep semantic code analysis
+  
+# Version and compatibility
+version: "1.0"
+min_python_version: "3.8"
+compatible_platforms: ["linux", "macos", "windows"]
