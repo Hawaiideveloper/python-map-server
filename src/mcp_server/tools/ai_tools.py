@@ -64,10 +64,26 @@ def ai_chat(prompt: str, model: str = "gpt-3.5-turbo", provider: str = "openai")
                 messages=[{"role": "user", "content": prompt}]
             )
 
+            # Extract text from response content blocks
+            response_text = ""
+            for content_block in response.content:
+                # Check if it's a text block using getattr to avoid attribute errors
+                if getattr(content_block, 'type', None) == 'text':
+                    response_text = getattr(content_block, 'text', '')
+                    break
+                # Fallback for blocks that might have text but no type
+                elif hasattr(content_block, 'text') and getattr(content_block, 'type', None) != 'tool_use':
+                    response_text = getattr(content_block, 'text', '')
+                    break
+            
+            if not response_text and response.content:
+                # Last resort: convert to string
+                response_text = str(response.content[0])
+
             return {
                 "status": "success",
                 "result": {
-                    "response": response.content[0].text,
+                    "response": response_text,
                     "model": model,
                     "provider": provider,
                     "usage": {
