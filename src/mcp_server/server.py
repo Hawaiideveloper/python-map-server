@@ -6,6 +6,7 @@ This module implements the main MCP server with JSON-RPC protocol support,
 HTTP REST API bridge, security features, and comprehensive tool registration.
 """
 
+import asyncio
 import os
 import sys
 import threading
@@ -13,7 +14,7 @@ import time
 from typing import Any
 
 import uvicorn
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mcp.server.fastmcp.server import FastMCP
@@ -31,6 +32,7 @@ from mcp_server.tools import (
 )
 from mcp_server.utils.auth import authenticate_request, check_rate_limit
 from mcp_server.utils.logging import log_http_request, setup_logger
+from mcp_server.websocket_server import get_websocket_handler
 
 # Setup logging
 logger = setup_logger("mcp_server")
@@ -80,6 +82,7 @@ async def root(request: Request):
         "version": "0.3.0",
         "endpoints": {
             "health": "/health",
+            "mcp_websocket": "/mcp",
             "run_code": "/run_code",
             "lint_code": "/lint_code",
             "format_code": "/format_code",
@@ -88,8 +91,36 @@ async def root(request: Request):
             "system_tools": "/system/*",
             "sdk_tools": "/sdk/*"
         },
+        "protocols": {
+            "mcp_websocket": "ws://localhost:8080/mcp",
+            "http_rest": "http://localhost:8080/"
+        },
         "documentation": "/docs" if DEVELOPMENT_MODE else "Contact admin for API documentation"
     }
+
+# WebSocket MCP Server Endpoint
+@http_app.websocket("/mcp")
+async def mcp_websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for true MCP JSON-RPC protocol."""
+    handler = get_websocket_handler(mcp_server)
+    
+    try:
+        await handler.connect(websocket)
+        logger.info("MCP WebSocket client connected")
+        
+        while True:
+            # Receive MCP message
+            message = await websocket.receive_text()
+            
+            # Process MCP request
+            await handler.handle_mcp_message(websocket, message)
+            
+    except WebSocketDisconnect:
+        logger.info("MCP WebSocket client disconnected")
+        handler.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"MCP WebSocket error: {e}")
+        handler.disconnect(websocket)
 
 # Register MCP Tools using FastMCP decorators
 
@@ -456,8 +487,9 @@ def main():
             logger.info(f"   Host: {config['host']}")
             logger.info(f"   Port: {config['port']}")
             logger.info(f"   Environment: {os.getenv('ENVIRONMENT')}")
+            logger.info("📡 Protocols: HTTP REST API + WebSocket MCP")
             
-            # In production, only run HTTP server (Railway doesn't support stdin/stdout MCP)
+            # Production: run HTTP server with WebSocket MCP support
             uvicorn.run(
                 "mcp_server.server:http_app",
                 host=config["host"],
@@ -467,6 +499,7 @@ def main():
         else:
             # Development mode: run both HTTP and MCP servers
             logger.info("🔧 Starting Python MCP Server in DEVELOPMENT mode")
+            logger.info("📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP")
             
             # Run HTTP server in a separate thread
             http_thread = threading.Thread(target=run_http_server, daemon=True)
