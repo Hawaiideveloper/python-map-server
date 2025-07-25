@@ -3,6 +3,8 @@
 
 A comprehensive Python MCP (Model Context Protocol) server with AI/LLM integration, system intelligence, and advanced development tools. This platform provides everything you need for Python development, machine learning, data science, and intelligent automation.
 
+_This MCP server essentially gives you a comprehensive code quality and compliance toolkit that can analyze any Python repository and ensure it meets professional standards!_
+
 ## 🌟 Key Features
 
 ### 🚀 Core Development Tools
