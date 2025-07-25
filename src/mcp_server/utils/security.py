@@ -18,21 +18,88 @@ from pathlib import Path
 
 # Dangerous imports that should be blocked
 BLOCKED_IMPORTS = {
-    'os', 'sys', 'subprocess', 'shutil', 'glob', 'tempfile',
+    # System access
+    'subprocess', 'shutil', 'tempfile',
     'importlib', '__import__', 'eval', 'exec', 'compile',
-    'open', 'file', 'input', 'raw_input', 'reload',
-    'socket', 'urllib', 'urllib2', 'httplib', 'ftplib',
-    'smtplib', 'telnetlib', 'pickle', 'cPickle', 'shelve',
-    'marshal', 'ctypes', 'multiprocessing', 'threading'
+    'input', 'raw_input', 'reload',
+    
+    # File system (controlled separately)
+    'open', 'file',
+    
+    # Network (only specific safe ones allowed)
+    'socket', 'ftplib', 'smtplib', 'telnetlib',
+    
+    # Serialization risks
+    'marshal', 'shelve',
+    
+    # System control
+    'ctypes', 'multiprocessing', 'threading', 'asyncio',
+    
+    # OS access (controlled)
+    'os', 'sys', 'glob'
 }
 
 # Safe imports that are allowed
 ALLOWED_IMPORTS = {
+    # Built-in safe modules
     'math', 'random', 'datetime', 'time', 'json', 'csv',
     'collections', 'itertools', 'functools', 'operator',
-    'string', 're', 'hashlib', 'base64', 'uuid',
-    'numpy', 'pandas', 'matplotlib', 'seaborn', 'scipy',
-    'requests'  # Controlled external library
+    'string', 're', 'hashlib', 'base64', 'uuid', 'decimal',
+    'fractions', 'statistics', 'calendar', 'copy', 'pickle',
+    'enum', 'dataclasses', 'typing', 'abc', 'warnings',
+    
+    # Data science and analysis
+    'numpy', 'np', 'pandas', 'pd', 'matplotlib', 'plt', 
+    'seaborn', 'sns', 'scipy', 'plotly', 'sklearn', 'scikit-learn',
+    'polars', 'pl', 'dask',
+    
+    # Machine Learning & AI
+    'torch', 'torchvision', 'tensorflow', 'tf', 'keras',
+    'transformers', 'tokenizers', 'sentence_transformers',
+    'xgboost', 'xgb', 'lightgbm', 'lgb',
+    
+    # LLM & AI Libraries
+    'openai', 'anthropic', 'langchain', 'langchain_community',
+    'langchain_openai', 'langchain_anthropic', 'llama_index',
+    'chromadb', 'faiss', 'pinecone',
+    
+    # NLP & Text Processing
+    'spacy', 'nltk', 'textblob', 'gensim',
+    
+    # Computer Vision & Media
+    'cv2', 'opencv', 'mediapipe', 'PIL', 'Pillow', 
+    'imageio', 'skimage', 'librosa', 'pydub',
+    
+    # Vector Databases
+    'weaviate', 'qdrant_client', 'qdrant',
+    
+    # MLOps & Tracking
+    'mlflow', 'wandb',
+    
+    # Web and networking (controlled)
+    'requests', 'httpx', 'urllib', 'http', 'html',
+    'beautifulsoup4', 'bs4', 'lxml', 'selenium', 'scrapy',
+    'aiohttp', 'asyncio',
+    
+    # Time Series & Statistics
+    'prophet', 'statsmodels', 'networkx',
+    
+    # Financial & Geographic
+    'yfinance', 'alpha_vantage', 'geopandas', 'folium',
+    
+    # Database connectors
+    'psycopg2', 'pymongo', 'redis', 'sqlite3',
+    
+    # Cloud SDKs
+    'boto3', 'botocore', 'google', 'azure',
+    
+    # Jupyter & Development
+    'jupyter', 'IPython', 'ipykernel',
+    
+    # Utilities
+    'dateutil', 'pytz', 'yaml', 'toml', 'configparser',
+    'argparse', 'logging', 'pathlib', 'textwrap',
+    'rich', 'click', 'typer', 'pydantic'
 }
 
 class SecurityViolation(Exception):

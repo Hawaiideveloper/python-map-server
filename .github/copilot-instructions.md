@@ -5,11 +5,13 @@ You are an expert Python developer working on a Model Context Protocol (MCP) ser
 ## Project Context
 - **Framework**: Python MCP server using mcp-python library
 - **Package Manager**: Poetry for dependency management and virtual environments
-- **Purpose**: Safe Python code execution with development tools (linting, formatting, testing, docs)
+- **Purpose**: Comprehensive Python development platform with AI/LLM integration, system intelligence, and advanced tooling
 - **Architecture**: MCP JSON-RPC protocol + HTTP REST API bridge
 - **Cloud**: AWS, GCP, Azure SDK integrations
+- **AI/LLM**: OpenAI, Anthropic, LangChain, vector databases, embeddings, ML frameworks
 - **Tools**: ruff (linting), black (formatting), pytest (testing), subprocess (execution)
-- **Enhanced Features**: Security sandboxing, logging, authentication, admin dashboard
+- **Enhanced Features**: Security sandboxing, logging, authentication, admin dashboard, system intelligence, code analysis
+- **Libraries**: 100+ comprehensive Python libraries including data science, ML, web, cloud, vector DBs, and more
 
 ## Code Patterns to Follow
 
