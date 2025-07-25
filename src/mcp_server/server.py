@@ -7,7 +7,7 @@ from typing import Dict, Any
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 import uvicorn
-from mcp.server import Server
+from mcp.server.fastmcp import FastMCP
 
 from mcp_server.tools import (
     run_code,
@@ -24,31 +24,34 @@ from mcp_server.utils.logging import log_http_request
 
 import os
 
-app = Server()
+# Create FastMCP app
+app = FastMCP("python-mcp-server")
 
-# Register MCP tools
-app.register_tool(run_code.run_python)
-app.register_tool(lint_code.lint_python)
-app.register_tool(format_code.format_python)
-app.register_tool(test_code.test_python)
-app.register_tool(doc_gen.generate_docs)
-app.register_tool(sdk_integrations.aws_upload_s3)
-app.register_tool(sdk_integrations.gcp_list_bucket)
-app.register_tool(sdk_integrations.azure_download_blob)
+# Register MCP tools using decorators
+@app.tool
+def run_python(code: str) -> Dict[str, Any]:
+    """Execute Python code safely using a subprocess and return output."""
+    return run_code.run_python(code)
 
-# Register AI/LLM tools
-app.register_tool(ai_tools.ai_chat)
-app.register_tool(ai_tools.create_embeddings)
-app.register_tool(ai_tools.vector_search)
-app.register_tool(ai_tools.train_ml_model)
-app.register_tool(ai_tools.analyze_text)
-app.register_tool(ai_tools.analyze_image)
+@app.tool  
+def lint_python(code: str) -> Dict[str, Any]:
+    """Lint Python code using ruff and return analysis."""
+    return lint_code.lint_python(code)
 
-# Register system intelligence tools
-app.register_tool(system_intelligence.get_system_info)
-app.register_tool(system_intelligence.analyze_code_intelligence)
-app.register_tool(system_intelligence.smart_debug_assistance)
-app.register_tool(system_intelligence.create_project_scaffold)
+@app.tool
+def format_python(code: str) -> Dict[str, Any]:
+    """Format Python code using black and return formatted result."""
+    return format_code.format_python(code)
+
+@app.tool
+def test_python(code: str) -> Dict[str, Any]:
+    """Test Python code using pytest and return results."""
+    return test_code.test_python(code)
+
+@app.tool
+def generate_docs(code: str) -> Dict[str, Any]:
+    """Generate documentation for Python code."""
+    return doc_gen.generate_docs(code)
 
 # HTTP API bridge using FastAPI
 http_app = FastAPI(title="Python MCP Server API", version="0.1.0")
