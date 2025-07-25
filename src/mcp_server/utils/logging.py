@@ -9,6 +9,7 @@ import logging
 import time
 import json
 import os
+import sys
 from typing import Dict, Any, Optional
 from functools import wraps
 from datetime import datetime
@@ -234,7 +235,7 @@ def get_system_status() -> Dict[str, Any]:
         "metrics": metrics.get_metrics(),
         "log_files": [str(f) for f in LOG_DIR.glob("*.log")],
         "system_info": {
-            "python_version": os.sys.version,
+            "python_version": sys.version,
             "platform": os.name,
             "working_directory": os.getcwd()
         }

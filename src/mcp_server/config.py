@@ -192,7 +192,7 @@ def get_cloud_config() -> Dict[str, Dict[str, Optional[str]]]:
         }
     }
 
-def get_vector_db_config() -> Dict[str, str]:
+def get_vector_db_config() -> Dict[str, Dict[str, str]]:
     """Get vector database configurations."""
     return {
         "chroma": {

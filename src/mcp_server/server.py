@@ -1,63 +1,170 @@
 
-import asyncio
-import json
+"""
+Enhanced Python MCP Server with AI/LLM integration and comprehensive tooling.
+
+This module implements the main MCP server with JSON-RPCdef create_project_scaffold_tool(project_name: str, project_type: str = "basic", features: list[str] | None = None) -> dict[str, Any]:protocol support,
+HTTP REST API bridge, security features, and comprehensive tool registration.
+"""
+
 import sys
 import threading
-from typing import Dict, Any
-from fastapi import FastAPI, Request, Depends
-from fastapi.responses import JSONResponse
-import uvicorn
-from mcp.server import Server
+from typing import Any
 
+import uvicorn
+from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from mcp.server.fastmcp.server import FastMCP
+
+from mcp_server.config import DEVELOPMENT_MODE
 from mcp_server.tools import (
-    run_code,
-    lint_code,
-    format_code,
-    test_code,
-    doc_gen,
-    sdk_integrations,
     ai_tools,
+    doc_gen,
+    format_code,
+    lint_code,
+    run_code,
+    sdk_integrations,
     system_intelligence,
+    test_code,
 )
 from mcp_server.utils.auth import authenticate_request, check_rate_limit
-from mcp_server.utils.logging import log_http_request
+from mcp_server.utils.logging import log_http_request, setup_logger
 
-import os
+# Setup logging
+logger = setup_logger("mcp_server")
 
-app = Server()
+# Initialize FastMCP Server
+mcp_server = FastMCP("python-mcp-server")
 
-# Register MCP tools
-app.register_tool(run_code.run_python)
-app.register_tool(lint_code.lint_python)
-app.register_tool(format_code.format_python)
-app.register_tool(test_code.test_python)
-app.register_tool(doc_gen.generate_docs)
-app.register_tool(sdk_integrations.aws_upload_s3)
-app.register_tool(sdk_integrations.gcp_list_bucket)
-app.register_tool(sdk_integrations.azure_download_blob)
+# Initialize FastAPI app for HTTP bridge
+http_app = FastAPI(
+    title="Python MCP Server HTTP Bridge",
+    description="Comprehensive Python development platform with AI/LLM integration",
+    version="0.3.0",
+    docs_url="/docs" if DEVELOPMENT_MODE else None,
+    redoc_url="/redoc" if DEVELOPMENT_MODE else None
+)
 
-# Register AI/LLM tools
-app.register_tool(ai_tools.ai_chat)
-app.register_tool(ai_tools.create_embeddings)
-app.register_tool(ai_tools.vector_search)
-app.register_tool(ai_tools.train_ml_model)
-app.register_tool(ai_tools.analyze_text)
-app.register_tool(ai_tools.analyze_image)
+# Add CORS middleware
+http_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Register system intelligence tools
-app.register_tool(system_intelligence.get_system_info)
-app.register_tool(system_intelligence.analyze_code_intelligence)
-app.register_tool(system_intelligence.smart_debug_assistance)
-app.register_tool(system_intelligence.create_project_scaffold)
+# Add CORS middleware
+http_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if DEVELOPMENT_MODE else ["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# HTTP API bridge using FastAPI
-http_app = FastAPI(title="Python MCP Server API", version="0.1.0")
+# Register MCP Tools using FastMCP decorators
+
+@mcp_server.tool(description="Execute Python code securely")
+def run_python_tool(code: str) -> dict[str, Any]:
+    """Execute Python code and return the result."""
+    return run_code.run_python(code)
+
+@mcp_server.tool(description="Lint Python code for syntax and style issues")
+def lint_python_tool(code: str) -> dict[str, Any]:
+    """Lint Python code and return issues found."""
+    return lint_code.lint_python(code)
+
+@mcp_server.tool(description="Format Python code using black")
+def format_python_tool(code: str) -> dict[str, Any]:
+    """Format Python code and return the formatted result."""
+    return format_code.format_python(code)
+
+@mcp_server.tool(description="Run tests on Python code")
+def test_python_tool(code: str) -> dict[str, Any]:
+    """Run tests on Python code and return results."""
+    return test_code.test_python(code)
+
+@mcp_server.tool(description="Generate documentation for Python code")
+def generate_docs_tool(code: str) -> dict[str, Any]:
+    """Generate documentation for Python code."""
+    return doc_gen.generate_docs(code)
+
+# AI/LLM Tools
+@mcp_server.tool(description="Chat with AI models")
+def ai_chat_tool(prompt: str, model: str = "gpt-3.5-turbo", provider: str = "openai") -> dict[str, Any]:
+    """Chat with AI models and get responses."""
+    return ai_tools.ai_chat(prompt, model, provider)
+
+@mcp_server.tool(description="Create embeddings from text")
+def create_embeddings_tool(texts: list[str], model: str = "text-embedding-ada-002") -> dict[str, Any]:
+    """Create embeddings from text."""
+    return ai_tools.create_embeddings(texts, model)
+
+@mcp_server.tool(description="Search vector database")
+def vector_search_tool(query: str, collection: str = "default", top_k: int = 5, vector_db: str = "chromadb") -> dict[str, Any]:
+    """Search vector database for relevant results."""
+    return ai_tools.vector_search(query, collection, top_k, vector_db)
+
+@mcp_server.tool(description="Train machine learning model")
+def train_ml_model_tool(data_code: str, model_type: str = "sklearn", algorithm: str = "random_forest") -> dict[str, Any]:
+    """Train a machine learning model."""
+    return ai_tools.train_ml_model(data_code, model_type, algorithm)
+
+@mcp_server.tool(description="Analyze text using NLP")
+def analyze_text_tool(text: str, analysis_type: str = "sentiment") -> dict[str, Any]:
+    """Analyze text using natural language processing."""
+    return ai_tools.analyze_text(text, analysis_type)
+
+@mcp_server.tool(description="Analyze images using computer vision")
+def analyze_image_tool(image_path: str, analysis_type: str = "objects") -> dict[str, Any]:
+    """Analyze images using computer vision."""
+    return ai_tools.analyze_image(image_path, analysis_type)
+
+# System Intelligence Tools
+@mcp_server.tool(description="Get system information")
+def get_system_info_tool() -> dict[str, Any]:
+    """Get comprehensive system information."""
+    return system_intelligence.get_system_info()
+
+@mcp_server.tool(description="Analyze code for intelligence insights")
+def analyze_code_intelligence_tool(code: str, analysis_type: str = "comprehensive") -> dict[str, Any]:
+    """Analyze code and provide intelligence insights."""
+    return system_intelligence.analyze_code_intelligence(code, analysis_type)
+
+@mcp_server.tool(description="Get smart debugging assistance")
+def smart_debug_assistance_tool(code: str, error_message: str = "") -> dict[str, Any]:
+    """Get smart debugging assistance for code issues."""
+    return system_intelligence.smart_debug_assistance(code, error_message)
+
+@mcp_server.tool(description="Create project scaffold")
+def create_project_scaffold_tool(project_name: str, project_type: str = "basic", features: list[str] | None = None) -> dict[str, Any]:
+    """Create a project scaffold with specified features."""
+    if features is None:
+        features = []
+    return system_intelligence.create_project_scaffold(project_name, project_type, features)
+
+# Cloud SDK Tools
+@mcp_server.tool(description="Upload file to AWS S3")
+def aws_upload_s3_tool(bucket: str, key: str, file_path: str) -> dict[str, Any]:
+    """Upload a file to AWS S3."""
+    return sdk_integrations.aws_upload_s3(bucket, key, file_path)
+
+@mcp_server.tool(description="List objects in GCP bucket")
+def gcp_list_bucket_tool(bucket: str) -> dict[str, Any]:
+    """List objects in a Google Cloud Platform bucket."""
+    return sdk_integrations.gcp_list_bucket(bucket)
+
+@mcp_server.tool(description="Download blob from Azure storage")
+def azure_download_blob_tool(container: str, blob_name: str, download_path: str) -> dict[str, Any]:
+    """Download a blob from Azure storage."""
+    return sdk_integrations.azure_download_blob(container, blob_name, download_path)
 
 @http_app.post("/run_code")
 @log_http_request("run_code")
 async def http_run_code(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -69,7 +176,7 @@ async def http_run_code(
 @log_http_request("lint_code")
 async def http_lint_code(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -81,7 +188,7 @@ async def http_lint_code(
 @log_http_request("format_code")
 async def http_format_code(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -93,7 +200,7 @@ async def http_format_code(
 @log_http_request("test_code")
 async def http_test_code(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -105,7 +212,7 @@ async def http_test_code(
 @log_http_request("doc_gen")
 async def http_doc_gen(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -118,7 +225,7 @@ async def http_doc_gen(
 @log_http_request("ai_chat")
 async def http_ai_chat(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -132,7 +239,7 @@ async def http_ai_chat(
 @log_http_request("create_embeddings")
 async def http_create_embeddings(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -145,7 +252,7 @@ async def http_create_embeddings(
 @log_http_request("vector_search")
 async def http_vector_search(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -160,7 +267,7 @@ async def http_vector_search(
 @log_http_request("train_ml_model")
 async def http_train_ml_model(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -174,7 +281,7 @@ async def http_train_ml_model(
 @log_http_request("analyze_text")
 async def http_analyze_text(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -187,7 +294,7 @@ async def http_analyze_text(
 @log_http_request("analyze_image")
 async def http_analyze_image(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -201,7 +308,7 @@ async def http_analyze_image(
 @log_http_request("system_info")
 async def http_system_info(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     result = system_intelligence.get_system_info()
@@ -211,7 +318,7 @@ async def http_system_info(
 @log_http_request("code_intelligence")
 async def http_code_intelligence(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -224,7 +331,7 @@ async def http_code_intelligence(
 @log_http_request("smart_debug")
 async def http_smart_debug(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -237,7 +344,7 @@ async def http_smart_debug(
 @log_http_request("project_scaffold")
 async def http_project_scaffold(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -251,7 +358,7 @@ async def http_project_scaffold(
 @log_http_request("aws_upload_s3")
 async def http_aws_upload_s3(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -265,7 +372,7 @@ async def http_aws_upload_s3(
 @log_http_request("gcp_list_bucket")
 async def http_gcp_list_bucket(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -277,7 +384,7 @@ async def http_gcp_list_bucket(
 @log_http_request("azure_download_blob")
 async def http_azure_download_blob(
     request: Request,
-    auth_info: Dict[str, Any] = Depends(authenticate_request)
+    auth_info: dict[str, Any] = Depends(authenticate_request)
 ):
     check_rate_limit(request)
     data = await request.json()
@@ -293,12 +400,21 @@ def run_http_server():
 
 
 def main():
-    # Run HTTP server in a separate thread
-    http_thread = threading.Thread(target=run_http_server, daemon=True)
-    http_thread.start()
+    """Main function to run both HTTP and MCP servers."""
+    try:
+        # Run HTTP server in a separate thread
+        http_thread = threading.Thread(target=run_http_server, daemon=True)
+        http_thread.start()
+        logger.info("Started HTTP server on http://0.0.0.0:8080")
 
-    # Run MCP server on stdin/stdout
-    app.run()
+        # Run MCP server on stdin/stdout
+        logger.info("Starting MCP server...")
+        mcp_server.run()
+    except KeyboardInterrupt:
+        logger.info("Server shutdown requested")
+    except Exception as e:
+        logger.error(f"Server error: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
