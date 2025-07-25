@@ -6,18 +6,24 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN pip install poetry
+# Install Poetry with specific version for consistency
+RUN pip install poetry==1.7.1
 
+# Copy dependency files
 COPY pyproject.toml poetry.lock* /app/
 
-# Configure Poetry and install dependencies
-RUN poetry config virtualenvs.create false && poetry install --only=main
+# Configure Poetry and install dependencies (exclude dev and test groups)
+RUN poetry config virtualenvs.create false \
+    && poetry install --without dev,test --no-interaction --no-ansi
 
+# Copy source code
 COPY src /app/src
-COPY logs/ /app/logs/
+
+# Create logs directory if it doesn't exist
+RUN mkdir -p /app/logs
 
 # Set environment variables
 ENV PYTHONPATH=/app/src

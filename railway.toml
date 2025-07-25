@@ -10,3 +10,5 @@ healthcheckInterval = 300
 [environments.production.variables]
 ENVIRONMENT = "production"
 PYTHON_VERSION = "3.11"
+NIXPACKS_PYTHON_VERSION = "3.11"
+POETRY_INSTALLER_MODERN_INSTALLATION = "false"

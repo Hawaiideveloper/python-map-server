@@ -1,0 +1,15 @@
+[variables]
+PYTHON_VERSION = "3.11"
+POETRY_INSTALLER_MODERN_INSTALLATION = "false"
+
+[phases.setup]
+nixPkgs = ["python311", "poetry"]
+
+[phases.install]
+cmds = [
+    "poetry config virtualenvs.create false",
+    "poetry install --without dev,test --no-interaction --no-ansi"
+]
+
+[start]
+cmd = "python -m mcp_server.server"
