@@ -1,0 +1,45 @@
+{
+  "python.defaultInterpreterPath": "python3",
+  "python.linting.enabled": true,
+  "python.linting.ruffEnabled": true,
+  "python.formatting.provider": "black",
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "files.associations": {
+    "*.md": "markdown",
+    "*.toml": "toml",
+    "Dockerfile": "dockerfile"
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "python": true,
+    "markdown": true,
+    "json": true,
+    "yaml": true,
+    "toml": true
+  },
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "copilot-codex",
+    "inlineSuggestEnable": true
+  },
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    ".pytest_cache": true,
+    ".ruff_cache": true,
+    ".mypy_cache": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    ".pytest_cache": true,
+    ".ruff_cache": true
+  }
+}
