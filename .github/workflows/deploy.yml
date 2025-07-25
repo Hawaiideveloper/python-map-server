@@ -1,0 +1,54 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Use Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+        
+      - name: Deploy to Railway
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        
+      - name: Install dependencies
+        run: poetry install
+        
+      - name: Run tests
+        run: poetry run pytest -v
+        
+      - name: Run linting
+        run: poetry run ruff check .
+        
+      - name: Check formatting
+        run: poetry run black --check .

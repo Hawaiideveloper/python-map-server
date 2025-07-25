@@ -6,8 +6,10 @@ This module implements the main MCP server with JSON-RPC protocol support,
 HTTP REST API bridge, security features, and comprehensive tool registration.
 """
 
+import os
 import sys
 import threading
+import time
 from typing import Any
 
 import uvicorn
@@ -48,20 +50,46 @@ http_app = FastAPI(
 # Add CORS middleware
 http_app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Add CORS middleware
-http_app.add_middleware(
-    CORSMiddleware,
     allow_origins=["*"] if DEVELOPMENT_MODE else ["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Health check and info endpoints for Railway deployment
+@http_app.get("/health")
+@log_http_request("health_check")
+async def health_check():
+    """Health check endpoint for Railway deployment monitoring"""
+    return {
+        "status": "healthy",
+        "service": "python-mcp-server",
+        "timestamp": time.time(),
+        "version": "0.3.0",
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "port": os.getenv("PORT", "8000")
+    }
+
+@http_app.get("/")
+@log_http_request("root")
+async def root():
+    """Root endpoint with service information"""
+    return {
+        "service": "Python MCP Server",
+        "status": "running",
+        "version": "0.3.0",
+        "endpoints": {
+            "health": "/health",
+            "run_code": "/run_code",
+            "lint_code": "/lint_code",
+            "format_code": "/format_code",
+            "test_code": "/test_code",
+            "ai_tools": "/ai/*",
+            "system_tools": "/system/*",
+            "sdk_tools": "/sdk/*"
+        },
+        "documentation": "/docs" if DEVELOPMENT_MODE else "Contact admin for API documentation"
+    }
 
 # Register MCP Tools using FastMCP decorators
 
@@ -395,21 +423,60 @@ async def http_azure_download_blob(
     return JSONResponse(content=result)
 
 
+def get_deployment_config():
+    """Get deployment configuration for Railway and other platforms"""
+    return {
+        "host": "0.0.0.0" if os.getenv("ENVIRONMENT") == "production" else "localhost",
+        "port": int(os.getenv("PORT", 8080)),
+        "reload": os.getenv("ENVIRONMENT") != "production",
+        "log_level": "info"
+    }
+
+
 def run_http_server():
-    uvicorn.run(http_app, host="0.0.0.0", port=8080)
+    """Run HTTP server with appropriate configuration"""
+    config = get_deployment_config()
+    uvicorn.run(
+        http_app, 
+        host=config["host"], 
+        port=config["port"],
+        log_level=config["log_level"],
+        reload=config["reload"]
+    )
 
 
 def main():
     """Main function to run both HTTP and MCP servers."""
     try:
-        # Run HTTP server in a separate thread
-        http_thread = threading.Thread(target=run_http_server, daemon=True)
-        http_thread.start()
-        logger.info("Started HTTP server on http://0.0.0.0:8080")
+        config = get_deployment_config()
+        
+        # Check if we're running in production (Railway/cloud)
+        if os.getenv("ENVIRONMENT") == "production":
+            logger.info("🚀 Starting Python MCP Server in PRODUCTION mode")
+            logger.info(f"   Host: {config['host']}")
+            logger.info(f"   Port: {config['port']}")
+            logger.info(f"   Environment: {os.getenv('ENVIRONMENT')}")
+            
+            # In production, only run HTTP server (Railway doesn't support stdin/stdout MCP)
+            uvicorn.run(
+                "mcp_server.server:http_app",
+                host=config["host"],
+                port=config["port"],
+                log_level=config["log_level"]
+            )
+        else:
+            # Development mode: run both HTTP and MCP servers
+            logger.info("🔧 Starting Python MCP Server in DEVELOPMENT mode")
+            
+            # Run HTTP server in a separate thread
+            http_thread = threading.Thread(target=run_http_server, daemon=True)
+            http_thread.start()
+            logger.info(f"Started HTTP server on http://{config['host']}:{config['port']}")
 
-        # Run MCP server on stdin/stdout
-        logger.info("Starting MCP server...")
-        mcp_server.run()
+            # Run MCP server on stdin/stdout
+            logger.info("Starting MCP server...")
+            mcp_server.run()
+            
     except KeyboardInterrupt:
         logger.info("Server shutdown requested")
     except Exception as e:
