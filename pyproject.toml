@@ -1,0 +1,27 @@
+
+[tool.poetry]
+name = "python-mcp-server"
+version = "0.1.0"
+description = "A Python MCP server with Python execution, linting, testing, docs, and cloud SDK integrations"
+authors = ["AI MCP Server Generator <aicp@example.com>"]
+packages = [{include = "mcp_server"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+mcp-python = "^0.3.0"
+ruff = "^0.0.280"
+black = "^23.3.0"
+pytest = "^7.4.0"
+bandit = "^1.7.5"
+boto3 = "^1.26.0"
+google-cloud-storage = "^2.7.0"
+azure-storage-blob = "^12.15.0"
+fastapi = "^0.95.0"
+uvicorn = "^0.22.0"
+
+[tool.poetry.scripts]
+mcp-server = "mcp_server.server:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
