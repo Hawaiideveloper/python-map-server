@@ -59,7 +59,7 @@ http_app.add_middleware(
 # Health check and info endpoints for Railway deployment
 @http_app.get("/health")
 @log_http_request("health_check")
-async def health_check():
+async def health_check(request: Request):
     """Health check endpoint for Railway deployment monitoring"""
     return {
         "status": "healthy",
@@ -72,7 +72,7 @@ async def health_check():
 
 @http_app.get("/")
 @log_http_request("root")
-async def root():
+async def root(request: Request):
     """Root endpoint with service information"""
     return {
         "service": "Python MCP Server",
