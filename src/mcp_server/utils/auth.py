@@ -294,7 +294,7 @@ class UsageTracker:
     """Track API usage for billing/monitoring."""
     
     def __init__(self):
-        self.usage_data = defaultdict(lambda: {
+        self.usage_data: DefaultDict[str, Dict[str, Any]] = defaultdict(lambda: {
             "requests": 0,
             "execution_time": 0.0,
             "errors": 0,
