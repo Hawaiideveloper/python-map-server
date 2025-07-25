@@ -6,13 +6,13 @@ user management, and server configuration.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import Response, JSONResponse, HTMLResponse
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 
-from ..utils.auth import authenticate_request, api_key_manager, usage_tracker
-from ..utils.database import db_manager
-from ..utils.logging import metrics, get_system_status, health_check
+from mcp_server.utils.auth import authenticate_request, api_key_manager, usage_tracker
+from mcp_server.utils.database import db_manager
+from mcp_server.utils.logging import metrics, get_system_status, health_check
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -254,11 +254,33 @@ async def get_logs(
         raise HTTPException(status_code=500, detail=f"Error reading log file: {str(e)}")
 
 @admin_router.get("/config")
-async def get_config(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
+async def get_server_config(auth_info: Dict[str, Any] = Depends(require_admin_auth)):
     """Get current server configuration."""
-    from ..config import get_config
+    from mcp_server.config import (
+        HTTP_HOST, HTTP_PORT, MCP_DEBUG, DEVELOPMENT_MODE,
+        API_RATE_LIMIT, API_RATE_LIMIT_WINDOW,
+        AWS_REGION, GCP_PROJECT, DATABASE_URL
+    )
     
-    config = get_config()
+    config = {
+        "server": {
+            "host": HTTP_HOST,
+            "port": HTTP_PORT,
+            "debug": MCP_DEBUG,
+            "development": DEVELOPMENT_MODE
+        },
+        "rate_limiting": {
+            "limit": API_RATE_LIMIT,
+            "window": API_RATE_LIMIT_WINDOW
+        },
+        "cloud": {
+            "aws_region": AWS_REGION,
+            "gcp_project": GCP_PROJECT
+        },
+        "database": {
+            "url": DATABASE_URL.split("://")[0] + "://***" if "://" in DATABASE_URL else "***"
+        }
+    }
     
     # Sanitize sensitive information
     sanitized_config = {}

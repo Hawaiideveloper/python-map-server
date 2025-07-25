@@ -2,7 +2,7 @@
 """
 Enhanced Python MCP Server with AI/LLM integration and comprehensive tooling.
 
-This module implements the main MCP server with JSON-RPCdef create_project_scaffold_tool(project_name: str, project_type: str = "basic", features: list[str] | None = None) -> dict[str, Any]:protocol support,
+This module implements the main MCP server with JSON-RPC protocol support,
 HTTP REST API bridge, security features, and comprehensive tool registration.
 """
 
