@@ -76,6 +76,11 @@ async def health_check(request: Request):
 @log_http_request("root")
 async def root(request: Request):
     """Root endpoint with service information"""
+    # Get the actual host from the request
+    host = request.headers.get("host", "localhost:8080")
+    scheme = "https" if request.headers.get("x-forwarded-proto") == "https" else "http"
+    ws_scheme = "wss" if scheme == "https" else "ws"
+    
     return {
         "service": "Python MCP Server",
         "status": "running",
@@ -92,8 +97,8 @@ async def root(request: Request):
             "sdk_tools": "/sdk/*"
         },
         "protocols": {
-            "mcp_websocket": "ws://localhost:8080/mcp",
-            "http_rest": "http://localhost:8080/"
+            "mcp_websocket": f"{ws_scheme}://{host}/mcp",
+            "http_rest": f"{scheme}://{host}/"
         },
         "documentation": "/docs" if DEVELOPMENT_MODE else "Contact admin for API documentation"
     }
