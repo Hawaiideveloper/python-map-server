@@ -51,6 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Node.js Client Examples** - JavaScript WebSocket MCP integration
 - **HTTP REST Backward Compatibility** - Existing HTTP API remains fully functional
 
+### 🖥️ Command Line Interface
+- **Bash CLI Script** (`railway-mcp-cli.sh`) - Simple command-line control without dependencies
+- **Advanced Python CLI** (`railway-mcp-cli.py`) - Full-featured CLI with WebSocket testing and interactive mode
+- **CLI Control Guide** (`CLI_CONTROL_GUIDE.md`) - Comprehensive documentation for all CLI operations
+- **Railway Integration** - Direct integration with Railway CLI for infrastructure management
+- **Interactive Mode** - Real-time server interaction and debugging capabilities
+
 ## [0.2.0] - 2025-07-25 - Enhanced Tools & Security
 
 ### 🛠️ Enhanced Tool Suite
