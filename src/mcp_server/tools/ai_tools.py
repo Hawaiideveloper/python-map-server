@@ -148,7 +148,7 @@ def create_embeddings(texts: list[str], model: str = "text-embedding-ada-002") -
         else:
             # Sentence transformers (optional dependency)
             try:
-                from sentence_transformers import SentenceTransformer
+                from sentence_transformers import SentenceTransformer  # type: ignore
 
                 model_instance = SentenceTransformer(model)
                 embeddings = model_instance.encode(texts).tolist()
@@ -198,7 +198,7 @@ def vector_search(query: str, collection: str = "default", top_k: int = 5,
 
         if vector_db == "chromadb":
             try:
-                import chromadb
+                import chromadb  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -228,7 +228,7 @@ def vector_search(query: str, collection: str = "default", top_k: int = 5,
 
         elif vector_db == "pinecone":
             try:
-                import pinecone
+                import pinecone  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -312,7 +312,7 @@ def train_ml_model(data_code: str, model_type: str = "sklearn",
 
         # Split data
         try:
-            from sklearn.model_selection import train_test_split
+            from sklearn.model_selection import train_test_split  # type: ignore
         except ImportError:
             return {
                 "status": "error",
@@ -324,8 +324,8 @@ def train_ml_model(data_code: str, model_type: str = "sklearn",
 
         if model_type == "sklearn":
             try:
-                from sklearn.ensemble import RandomForestClassifier
-                from sklearn.metrics import accuracy_score
+                from sklearn.ensemble import RandomForestClassifier  # type: ignore
+                from sklearn.metrics import accuracy_score  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -354,8 +354,8 @@ def train_ml_model(data_code: str, model_type: str = "sklearn",
 
         elif model_type == "xgboost":
             try:
-                import xgboost as xgb
-                from sklearn.metrics import accuracy_score
+                import xgboost as xgb  # type: ignore
+                from sklearn.metrics import accuracy_score  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -411,7 +411,7 @@ def analyze_text(text: str, analysis_type: str = "sentiment") -> dict[str, Any]:
 
         if analysis_type == "sentiment":
             try:
-                from textblob import TextBlob
+                from textblob import TextBlob  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -435,7 +435,7 @@ def analyze_text(text: str, analysis_type: str = "sentiment") -> dict[str, Any]:
 
         elif analysis_type == "entities":
             try:
-                import spacy
+                import spacy  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -466,8 +466,8 @@ def analyze_text(text: str, analysis_type: str = "sentiment") -> dict[str, Any]:
 
         elif analysis_type == "keywords":
             try:
-                import numpy as np
-                from sklearn.feature_extraction.text import TfidfVectorizer
+                import numpy as np  # type: ignore
+                from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore
             except ImportError:
                 return {
                     "status": "error",
@@ -521,8 +521,8 @@ def analyze_image(image_path: str, analysis_type: str = "objects") -> dict[str, 
             raise ValueError("image_path is required")
 
         try:
-            import cv2
-            import numpy as np
+            import cv2  # type: ignore
+            import numpy as np  # type: ignore
         except ImportError:
             return {
                 "status": "error",
