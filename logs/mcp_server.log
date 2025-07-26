@@ -1,0 +1,18 @@
+{"timestamp": "2025-07-26 02:32:55,957", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-07-26 02:32:55,963", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-07-26 02:32:56,089", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-07-26 02:32:56,138", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-07-26 02:34:07,627", "level": "INFO", "module": "mcp_server", "message": "HTTP request to health_check"}
+{"timestamp": "2025-07-26 02:34:07,633", "level": "INFO", "module": "mcp_server", "message": "HTTP response from health_check"}
+{"timestamp": "2025-07-26 02:34:15,999", "level": "INFO", "module": "mcp_server", "message": "HTTP request to health_check"}
+{"timestamp": "2025-07-26 02:34:16,001", "level": "INFO", "module": "mcp_server", "message": "HTTP response from health_check"}
+{"timestamp": "2025-07-26 02:34:24,650", "level": "INFO", "module": "mcp_server", "message": "HTTP request to root"}
+{"timestamp": "2025-07-26 02:34:24,655", "level": "INFO", "module": "mcp_server", "message": "HTTP response from root"}
+{"timestamp": "2025-07-26 02:35:57,707", "level": "INFO", "module": "mcp_server", "message": "HTTP request to health_check"}
+{"timestamp": "2025-07-26 02:35:57,711", "level": "INFO", "module": "mcp_server", "message": "HTTP response from health_check"}
+{"timestamp": "2025-07-26 02:35:57,719", "level": "INFO", "module": "mcp_server", "message": "HTTP request to root"}
+{"timestamp": "2025-07-26 02:35:57,736", "level": "INFO", "module": "mcp_server", "message": "HTTP response from root"}
+{"timestamp": "2025-07-26 02:39:13,599", "level": "INFO", "module": "mcp_server", "message": "HTTP request to health_check"}
+{"timestamp": "2025-07-26 02:39:13,607", "level": "INFO", "module": "mcp_server", "message": "HTTP response from health_check"}
+{"timestamp": "2025-07-26 02:39:13,615", "level": "INFO", "module": "mcp_server", "message": "HTTP request to root"}
+{"timestamp": "2025-07-26 02:39:13,617", "level": "INFO", "module": "mcp_server", "message": "HTTP response from root"}

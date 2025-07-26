@@ -1,34 +1,110 @@
 #!/usr/bin/env python3
 """
-Simple demo script to test your MCP Server locally.
-
-This script will help you understand how your server works by showing
-real examples that are easy to understand!
+Simple MCP Server Test - Bypass authentication issues for local testing
 """
 
 import requests
-import time
 import json
 
-# Server configuration
-SERVER_URL = "http://localhost:8000"
-
-def test_server():
-    """Test if the server is running and accessible."""
-    print("🔍 Testing if server is running...")
+def test_local_server():
+    """Test the local server with various endpoints."""
+    base_url = "http://localhost:8080"
+    admin_key = "mcp_admin_7kuF6ve-SdAvQ5joKObch4tGSdmIMifCA6CPFGuCa-k"
+    
+    print("🧪 Testing Local MCP Server")
+    print("=" * 40)
+    
+    # Test endpoints that don't require auth
+    print("\n1. Testing public endpoints...")
+    
+    # Health endpoint
     try:
-        response = requests.get(f"{SERVER_URL}/health", timeout=5)
+        response = requests.get(f"{base_url}/health")
+        print(f"✅ Health: {response.status_code} - {response.json()['status']}")
+    except Exception as e:
+        print(f"❌ Health failed: {e}")
+    
+    # Root endpoint
+    try:
+        response = requests.get(f"{base_url}/")
+        data = response.json()
+        print(f"✅ Root: {response.status_code} - {data['service']}")
+        print(f"   Available endpoints: {len(data['endpoints'])}")
+    except Exception as e:
+        print(f"❌ Root failed: {e}")
+    
+    # Documentation endpoint
+    try:
+        response = requests.get(f"{base_url}/docs")
+        print(f"✅ Docs: {response.status_code} - Swagger UI available")
+    except Exception as e:
+        print(f"❌ Docs failed: {e}")
+    
+    print("\n2. Testing authenticated endpoints...")
+    headers = {
+        "Content-Type": "application/json",
+        "X-Admin-Key": admin_key
+    }
+    
+    # Test code execution
+    test_code = "print('Hello from local MCP server!')
+import sys
+print(f'Python: {sys.version.split()[0]}')"
+    try:
+        response = requests.post(
+            f"{base_url}/run_code",
+            headers=headers,
+            json={"code": test_code, "timeout": 10}
+        )
         if response.status_code == 200:
-            print("✅ Server is running!")
-            return True
+            result = response.json()
+            print(f"✅ Code execution: {response.status_code}")
+            if result.get("result", {}).get("stdout"):
+                print(f"   Output: {result['result']['stdout'].strip()}")
         else:
-            print(f"❌ Server returned status code: {response.status_code}")
-            return False
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Can't connect to server: {e}")
-        print("\n💡 Make sure you started the server with:")
-        print("   poetry run python -m mcp_server.server")
-        return False
+            print(f"⚠️  Code execution: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"❌ Code execution failed: {e}")
+    
+    # Test linting
+    bad_code = "print( 'badly formatted code' )"
+    try:
+        response = requests.post(
+            f"{base_url}/lint_code",
+            headers=headers,
+            json={"code": bad_code}
+        )
+        if response.status_code == 200:
+            result = response.json()
+            print(f"✅ Code linting: {response.status_code}")
+            issues = result.get("result", {}).get("issues", [])
+            print(f"   Found {len(issues)} linting issues")
+        else:
+            print(f"⚠️  Code linting: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Code linting failed: {e}")
+    
+    print("
+3. Direct curl examples for testing:")
+    print(f"# Test code execution:")
+    print(f"""curl -X POST {base_url}/run_code 
+  -H "Content-Type: application/json" 
+  -H "X-Admin-Key: {admin_key}" 
+  -d '{{"code": "print("Hello World!")"}}' | jq""")
+    
+    print(f"
+# Test system info:")
+    print(f"""curl -H "X-Admin-Key: {admin_key}" {base_url}/system/info | jq""")
+    
+    print(f"
+# Test linting:")
+    print(f"""curl -X POST {base_url}/lint_code 
+  -H "Content-Type: application/json" 
+  -H "X-Admin-Key: {admin_key}" 
+  -d '{{"code": "print( "test" )"}}' | jq""")
+
+if __name__ == "__main__":
+    test_local_server()
 
 def get_api_key():
     """Get API key from user input."""
