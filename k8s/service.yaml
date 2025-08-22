@@ -8,10 +8,10 @@ metadata:
     app.kubernetes.io/component: service
     app.kubernetes.io/part-of: mcp-platform
   annotations:
-    description: "Service for Python MCP Server"
-  "prometheus.io/scrape": "true"
-  "prometheus.io/port": "3030"
-  "prometheus.io/path": "/metrics"
+  description: "Service for Python MCP Server"
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3030"
+  prometheus.io/path: "/metrics"
 spec:
   type: NodePort
   selector:
