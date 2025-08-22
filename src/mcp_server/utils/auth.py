@@ -5,6 +5,7 @@ This module provides request rate limiting, API key authentication, and
 session management for multi-user scenarios.
 """
 
+import os
 import secrets
 import time
 from collections import defaultdict, deque
@@ -88,9 +89,15 @@ class APIKeyManager:
         self._create_default_keys()
 
     def _create_default_keys(self):
-        """Create default API keys for development."""
-        admin_key = "mcp_admin_" + secrets.token_urlsafe(32)
-        user_key = "mcp_user_" + secrets.token_urlsafe(32)
+        """Create default API keys.
+
+        Priority:
+        1. Use explicitly provided environment variable API_KEY (stable admin key for prod)
+        2. Generate random fallback for development convenience.
+        """
+        # Allow externally provided stable admin key via env (Kubernetes Secret)
+        admin_key = os.getenv("API_KEY") or ("mcp_admin_" + secrets.token_urlsafe(32))
+        user_key = os.getenv("USER_API_KEY") or ("mcp_user_" + secrets.token_urlsafe(32))
 
         self.api_keys[admin_key] = {
             "name": "Admin Key",
@@ -108,9 +115,11 @@ class APIKeyManager:
             "request_count": 0
         }
 
-        print("Default API Keys created:")
-        print(f"Admin Key: {admin_key}")
-        print(f"User Key: {user_key}")
+        # Only print generated keys when they were not provided (avoid leaking secrets)
+        if not os.getenv("API_KEY"):
+            print("Default Admin API Key generated (development only):", admin_key)
+        if not os.getenv("USER_API_KEY"):
+            print("Default User API Key generated (development only):", user_key)
 
     def validate_api_key(self, api_key: str) -> Optional[dict[str, Any]]:
         """Validate an API key and return key info."""

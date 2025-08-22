@@ -160,6 +160,12 @@ spec:
           mountPath: /app/logs
         - name: cache
           mountPath: /app/.cache
+        - name: data
+          mountPath: /app/data
+        - name: models
+          mountPath: /app/models
+        - name: temp
+          mountPath: /app/temp
       volumes:
       - name: tmp
         emptyDir:
@@ -170,6 +176,15 @@ spec:
       - name: cache
         emptyDir:
           sizeLimit: 200Mi
+      - name: data
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: models
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: temp
+        emptyDir:
+          sizeLimit: 500Mi
       imagePullSecrets:
       - name: ghcr-pull-secret
       restartPolicy: Always

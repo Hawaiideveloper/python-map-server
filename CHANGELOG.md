@@ -1,3 +1,9 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+- Initial repository setup and Kubernetes deployment automation.
 # CHANGELOG
 
 All notable changes to the Python MCP Server project will be documented in this file.

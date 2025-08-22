@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: mcp-server-monitor
+  namespace: mcp-server
+  labels:
+    app.kubernetes.io/name: python-mcp-server
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: mcp-platform
+  annotations:
+    description: "ServiceMonitor for Python MCP Server Prometheus metrics"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: python-mcp-server
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    honorLabels: true
+  - port: metrics
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - mcp-server

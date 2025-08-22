@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Make k8s scripts executable",
+      "type": "shell",
+      "command": "./.vscode/approved-commands.sh chmod",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run k8s checklist tests",
+      "type": "shell",
+      "command": "./.vscode/approved-commands.sh test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy Python MCP Server (k8s)",
+      "type": "shell",
+      "command": "./.vscode/approved-commands.sh deploy",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Port-forward MCP (3011)",
+      "type": "shell",
+      "command": "./.vscode/approved-commands.sh port-forward",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

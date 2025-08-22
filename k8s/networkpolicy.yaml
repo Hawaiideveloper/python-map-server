@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mcp-server-netpol
+  namespace: python-mcp-server
+  labels:
+    app.kubernetes.io/name: python-mcp-server
+    app.kubernetes.io/component: networkpolicy
+    app.kubernetes.io/part-of: mcp-platform
+  annotations:
+    description: "Network policy for Python MCP Server"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: python-mcp-server
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+  port: 3030
+  # Allow ingress from monitoring namespace
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+  port: 3030
+    - protocol: TCP
+      port: 8080
+  # Allow internal communication within namespace
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: mcp-server
+    ports:
+    - protocol: TCP
+  port: 3030
+    - protocol: TCP
+      port: 8080
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow HTTPS outbound (for API calls, registry access)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow HTTP outbound (for health checks, API calls)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
+  # Allow Kubernetes API access
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 6443

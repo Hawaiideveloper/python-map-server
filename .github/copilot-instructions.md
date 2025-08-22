@@ -12,6 +12,11 @@ You are an expert Python developer working on a Model Context Protocol (MCP) ser
 - **Tools**: ruff (linting), black (formatting), pytest (testing), subprocess (execution)
 - **Enhanced Features**: Security sandboxing, logging, authentication, admin dashboard, system intelligence, code analysis
 - **Libraries**: 100+ comprehensive Python libraries including data science, ML, web, cloud, vector DBs, and more
+- **Primary Goal**: Complete the comprehensive 130+ item checklist.md for production deployment
+- **Deployment Strategy**: Kubernetes (preferred) with Docker fallback via scripts/deploy.py
+- **Registry**: GitHub Container Registry (GHCR) - avoid Docker Hub
+- **Owner**: Hawaiideveloper
+- **Language Policy**: Python-only - avoid other languages unless absolutely necessary
 
 ## Code Patterns to Follow
 
@@ -195,6 +200,17 @@ from mcp_server.utils.security import execute_code_securely
 3. Add comprehensive tests
 4. Update documentation
 5. Follow error handling patterns
+
+## GHCR & GitHub CLI automation notes
+- The AI or maintainer may create a Kubernetes image-pull secret (`ghcr-pull-secret`) using local environment variables `GHCR_USER` and `GHCR_PAT` (or `GITHUB_PERSONAL_ACCESS_TOKEN`). Do not echo tokens or commit them to the repo.
+- To create GitHub repository secrets via CLI, use the `gh` CLI and `GITHUB_PERSONAL_ACCESS_TOKEN` from the environment. Example (local only):
+
+```bash
+# export GITHUB_PERSONAL_ACCESS_TOKEN=...
+gh secret set GHCR_PAT --body "$GITHUB_PERSONAL_ACCESS_TOKEN" --repo "$GITHUB_REPOSITORY"
+```
+
+Note: Creating secrets in GitHub requires a token with repo:public_repo or repo scope depending on the repo visibility.
 
 ## Performance Guidelines
 - Timeout all operations (30s default)

@@ -1,17 +1,29 @@
 {
+  "mcpServers": {
+    "python-mcp-server": {
+      "transport": { "type": "websocket", "url": "ws://localhost:3030/mcp" },
+      "authentication": {
+        "type": "apiKey",
+        "header": "Authorization",
+        "prefix": "Bearer ",
+        "env": "MCP_API_KEY"
+      },
+      "description": "Local or port-forwarded MCP server. For cluster: run 'kubectl port-forward svc/mcp-server-service 3030:3030 -n python-mcp-server' then connect."
+    }
+  },
   "python.defaultInterpreterPath": "python3",
   "python.linting.enabled": true,
   "python.linting.ruffEnabled": true,
   "python.formatting.provider": "black",
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestArgs": [
-    "tests"
-  ],
+  "python.testing.pytestArgs": ["tests"],
   "files.associations": {
     "*.md": "markdown",
     "*.toml": "toml",
-    "Dockerfile": "dockerfile"
+    "Dockerfile": "dockerfile",
+    "*.yaml": "yaml",
+    "*.yml": "yaml"
   },
   "github.copilot.enable": {
     "*": true,
@@ -19,7 +31,8 @@
     "markdown": true,
     "json": true,
     "yaml": true,
-    "toml": true
+    "toml": true,
+    "dockerfile": true
   },
   "github.copilot.advanced": {
     "debug.overrideEngine": "copilot-codex",
@@ -41,5 +54,54 @@
     "**/*.pyc": true,
     ".pytest_cache": true,
     ".ruff_cache": true
-  }
+  },
+  "chat.agent.maxRequests": 999,
+  "chat.tools.autoApprove": true,
+  "chat.tools.autoFixSuggestions": true,
+  "chat.tools.terminal.autoApprove": {
+    "git": true,
+    "gh": true,
+    "pytest": true,
+    "python3": true,
+    "pip3": true,
+    "docker": true,
+    "kubectl": true,
+    "chmod": true,
+    "cd": true,
+    "curl": true,
+    "ls": true,
+    "cat": true,
+    "echo": true,
+    "sleep": true,
+    "/^go(\\s+test)?$/": true,
+    "/^kubectl\\s+get/": true,
+    "/^kubectl\\s+apply/": true,
+    "/^kubectl\\s+describe/": true,
+    "/^kubectl\\s+logs/": true,
+    "/^kubectl\\s+port-forward/": true,
+    "/^kubectl\\s+create\\s+namespace/": true,
+    "/^kubectl\\s+create\\s+secret/": true,
+    "/^docker\\s+build/": true,
+    "/^docker\\s+run/": true,
+    "/^docker\\s+stop/": true,
+    "/^docker\\s+rm/": true,
+    "/^\\.\\/\\.vscode\\/approved-commands\\.sh/": true,
+    "/^scripts\\/deploy\\.py/": true,
+    "/^scripts\\/test_runner\\.py/": true,
+    "/^python3\\s+-m\\s+pytest/": true,
+    "/^gh\\s+secret\\s+set/": true,
+    "/^SKIP_LOCAL_BUILD=1/": true,
+    "/^(rm|rmdir|del|kill|killall|chown)\\b/": false
+  },
+  "extensions.ignoreRecommendations": false,
+  "workbench.startupEditor": "readme",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "kubernetes.namespace": "python-mcp-server",
+  "kubernetes.outputFormat": "yaml"
 }
+
+
+

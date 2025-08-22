@@ -1,0 +1,4 @@
+{"timestamp": "2025-08-22 12:30:14,961", "level": "INFO", "module": "mcp_websocket", "message": "New MCP WebSocket connection established. Total: 1"}
+{"timestamp": "2025-08-22 12:30:14,963", "level": "INFO", "module": "mcp_websocket", "message": "MCP WebSocket connection closed. Remaining: 0"}
+{"timestamp": "2025-08-22 12:30:44,460", "level": "INFO", "module": "mcp_websocket", "message": "New MCP WebSocket connection established. Total: 1"}
+{"timestamp": "2025-08-22 12:30:44,463", "level": "INFO", "module": "mcp_websocket", "message": "MCP WebSocket connection closed. Remaining: 0"}
