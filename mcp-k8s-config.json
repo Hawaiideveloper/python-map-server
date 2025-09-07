@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "python-mcp-server": {
+      "command": "kubectl",
+      "args": [
+        "exec", "-i", "-n", "python-mcp-server",
+        "deployment/python-mcp-server",
+        "--", "python", "-m", "mcp_server.server"
+      ],
+      "env": {
+        "ENVIRONMENT": "production",
+        "HTTP_HOST": "0.0.0.0",
+        "HTTP_PORT": "33221",
+        "PYTHONPATH": "/app/src",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}

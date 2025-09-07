@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-mcp-server-test
+  namespace: default
+  labels:
+    app: python-mcp-server
+    version: "test"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-mcp-server
+      version: "test"
+  template:
+    metadata:
+      labels:
+        app: python-mcp-server
+        version: "test"
+    spec:
+      containers:
+      - name: python-mcp-server
+        image: hawaiideveloper/python-mcp-server:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: HTTP_PORT
+          value: "8080"
+        - name: HTTP_HOST
+          value: "0.0.0.0"
+        - name: PYTHONPATH
+          value: "/app/src"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-mcp-server-test-service
+  namespace: default
+  labels:
+    app: python-mcp-server
+    version: "test"
+spec:
+  selector:
+    app: python-mcp-server
+    version: "test"
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: ClusterIP

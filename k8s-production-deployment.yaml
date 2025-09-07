@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-mcp-server
+  namespace: python-mcp-server
+  labels:
+    app: python-mcp-server
+    version: "production"
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: python-mcp-server
+  template:
+    metadata:
+      labels:
+        app: python-mcp-server
+        version: "production"
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: python-mcp-server
+        image: ghcr.io/hawaiideveloper/python-mcp-server:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 33221
+          protocol: TCP
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: HTTP_HOST
+          value: "0.0.0.0"
+        - name: HTTP_PORT
+          value: "33221"
+        - name: PYTHONPATH
+          value: "/app/src"
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 33221
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 33221
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 2
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: cache
+          mountPath: /app/cache
+      volumes:
+      - name: logs
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: cache
+        emptyDir:
+          sizeLimit: 2Gi
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-mcp-server-service
+  namespace: python-mcp-server
+  labels:
+    app: python-mcp-server
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 33221
+    protocol: TCP
+  selector:
+    app: python-mcp-server
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: python-mcp-server
+  labels:
+    name: python-mcp-server

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "python-mcp-server": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "ENVIRONMENT=production",
+        "-e", "HTTP_HOST=0.0.0.0",
+        "-e", "HTTP_PORT=33221",
+        "-e", "PYTHONPATH=/app/src",
+        "-e", "LOG_LEVEL=info",
+        "ghcr.io/hawaiideveloper/python-mcp-server:latest"
+      ]
+    }
+  }
+}

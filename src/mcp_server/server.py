@@ -1015,7 +1015,7 @@ def get_deployment_config():
     """Get deployment configuration for Railway and other platforms"""
     return {
         "host": "0.0.0.0" if os.getenv("ENVIRONMENT") == "production" else "localhost",
-        "port": int(os.getenv("PORT", 8080)),
+        "port": int(os.getenv("HTTP_PORT", os.getenv("PORT", 8080))),
         "reload": os.getenv("ENVIRONMENT") != "production",
         "log_level": "info"
     }
