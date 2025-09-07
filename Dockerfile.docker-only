@@ -22,14 +22,14 @@ RUN pip install poetry==1.7.1 && \
     poetry config virtualenvs.create false && \
     poetry install --only=main
 
-# Copy application code
+# Copy application code (including docs/ since we use custom .dockerignore)
 COPY . .
 
 # Install the current project
 RUN poetry install --no-root
 
 # Create necessary directories
-RUN mkdir -p /app/logs /app/data /app/temp /app/cache /app/docs/python_manuals
+RUN mkdir -p /app/logs /app/data /app/temp /app/cache
 
 # Expose port
 EXPOSE 8080
