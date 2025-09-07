@@ -32,3 +32,41 @@
 {"timestamp": "2025-08-22 12:30:44,463", "level": "INFO", "module": "mcp_server", "message": "MCP WebSocket client disconnected"}
 {"timestamp": "2025-08-22 12:30:44,476", "level": "INFO", "module": "mcp_server", "message": "HTTP request to run_code"}
 {"timestamp": "2025-08-22 12:30:44,876", "level": "INFO", "module": "mcp_server", "message": "HTTP response from run_code"}
+{"timestamp": "2025-09-07 06:09:56,492", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-09-07 06:09:56,601", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-09-07 06:09:56,606", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-09-07 06:09:56,617", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-09-07 06:33:08,991", "level": "INFO", "module": "mcp_server", "message": "Server shutdown requested"}
+{"timestamp": "2025-09-07 06:33:30,126", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-09-07 06:33:30,143", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-09-07 06:33:30,175", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-09-07 06:33:30,246", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-09-07 06:33:50,110", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-09-07 06:33:50,117", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-09-07 06:33:50,123", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-09-07 06:33:50,139", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-09-07 06:39:10,319", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-09-07 06:39:10,331", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-09-07 06:39:10,344", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-09-07 06:39:10,352", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-09-07 06:41:08,491", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-09-07 06:41:08,505", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-09-07 06:41:08,542", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-09-07 06:41:08,553", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-09-07 06:45:41,963", "level": "INFO", "module": "mcp_server", "message": "🔧 Starting Python MCP Server in DEVELOPMENT mode"}
+{"timestamp": "2025-09-07 06:45:42,084", "level": "INFO", "module": "mcp_server", "message": "📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP"}
+{"timestamp": "2025-09-07 06:45:42,103", "level": "INFO", "module": "mcp_server", "message": "Started HTTP server on http://localhost:8080"}
+{"timestamp": "2025-09-07 06:45:42,113", "level": "INFO", "module": "mcp_server", "message": "Starting MCP server..."}
+{"timestamp": "2025-09-07 06:45:42,310", "level": "ERROR", "module": "mcp_server", "message": "Server error: unhandled errors in a TaskGroup (1 sub-exception)"}
+{"timestamp": "2025-09-07 06:55:04,029", "level": "INFO", "module": "mcp_server", "message": "HTTP request to health_check"}
+{"timestamp": "2025-09-07 06:55:04,459", "level": "INFO", "module": "mcp_server", "message": "HTTP response from health_check"}
+{"timestamp": "2025-09-07 06:55:28,367", "level": "INFO", "module": "mcp_server", "message": "HTTP request to health_check"}
+{"timestamp": "2025-09-07 06:55:28,371", "level": "INFO", "module": "mcp_server", "message": "HTTP response from health_check"}
+{"timestamp": "2025-09-07 07:19:11,179", "level": "INFO", "module": "mcp_server", "message": "HTTP request to advanced_json_processing"}
+{"timestamp": "2025-09-07 07:19:11,216", "level": "INFO", "module": "mcp_server", "message": "HTTP response from advanced_json_processing"}
+{"timestamp": "2025-09-07 07:19:35,366", "level": "INFO", "module": "mcp_server", "message": "HTTP request to advanced_json_processing"}
+{"timestamp": "2025-09-07 07:19:36,346", "level": "INFO", "module": "mcp_server", "message": "HTTP response from advanced_json_processing"}
+{"timestamp": "2025-09-07 07:21:23,872", "level": "INFO", "module": "mcp_server", "message": "HTTP request to advanced_yaml_processing"}
+{"timestamp": "2025-09-07 07:21:24,679", "level": "INFO", "module": "mcp_server", "message": "HTTP response from advanced_yaml_processing"}
+{"timestamp": "2025-09-07 07:21:36,853", "level": "INFO", "module": "mcp_server", "message": "HTTP request to advanced_yaml_processing"}
+{"timestamp": "2025-09-07 07:21:37,551", "level": "INFO", "module": "mcp_server", "message": "HTTP response from advanced_yaml_processing"}

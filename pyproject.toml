@@ -63,6 +63,25 @@ ruff = "^0.1.0"
 black = "^23.9.0"
 pytest = "^7.4.0"
 
+# Advanced Code Analysis
+mypy = "^1.8.0"
+bandit = "^1.7.5"
+pylint = "^3.0.0"
+vulture = "^2.11"  # Dead code detection
+safety = "^3.0.0"  # Dependency vulnerability scanning
+jedi = "^0.19.0"  # Code completion and analysis
+
+# Performance & Profiling
+py-spy = "^0.3.14"
+memory-profiler = "^0.61.0"
+line-profiler = "^4.1.0"
+
+# Modern Python Features Support
+typing-extensions = "^4.9.0"
+
+# High-Performance & Scaling (already defined above)
+# These are duplicates - removed to fix TOML validation
+
 # Cloud SDKs (optional)
 boto3 = "^1.28.0"
 google-cloud-storage = "^2.10.0"

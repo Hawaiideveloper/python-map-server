@@ -1,40 +1,145 @@
+# Multi-stage Dockerfile for high-performance Python MCP Server
+# Optimized for production deployment with minimal attack surface
 
-FROM python:3.11-slim
+# Stage 1: Builder
+FROM python:3.12-slim as builder
 
-WORKDIR /app
+# Set build arguments
+ARG POETRY_VERSION=1.7.1
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
-# Install system dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
-    curl \
     build-essential \
+    curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry with specific version for consistency
-RUN pip install poetry==1.7.1
+# Install Poetry
+RUN pip install poetry==$POETRY_VERSION
 
-# Copy dependency files
-COPY pyproject.toml /app/
+# Configure Poetry
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VENV_IN_PROJECT=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# Configure Poetry and regenerate lock file, then install dependencies
-RUN poetry config virtualenvs.create false \
-    && poetry lock \
-    && poetry install --without dev,test --no-interaction --no-ansi
+# Set work directory
+WORKDIR /app
 
-# Copy source code
-COPY src /app/src
+# Copy Poetry files
+COPY pyproject.toml poetry.lock ./
 
-# Create logs directory if it doesn't exist
-RUN mkdir -p /app/logs
+# Install dependencies
+RUN poetry install --only=main --no-root && rm -rf $POETRY_CACHE_DIR
+
+# Stage 2: Production
+FROM python:3.12-slim as production
+
+# Set production arguments
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION=1.0.0
+
+# Add metadata labels
+LABEL org.opencontainers.image.title="Python MCP Server" \
+      org.opencontainers.image.description="High-performance Python Model Context Protocol server" \
+      org.opencontainers.image.version=$VERSION \
+      org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.opencontainers.image.vendor="Python MCP Server" \
+      org.opencontainers.image.licenses="MIT"
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y \
+    # Required for psutil and system monitoring
+    procps \
+    # Required for git operations
+    git \
+    # Required for network operations
+    curl \
+    # Required for Redis connections
+    redis-tools \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create non-root user for security
+RUN groupadd -r mcpuser && useradd -r -g mcpuser -u 1000 mcpuser
 
 # Set environment variables
-ENV PYTHONPATH=/app/src
-ENV ENVIRONMENT=production
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH" \
+    ENVIRONMENT=production \
+    HTTP_HOST=0.0.0.0 \
+    HTTP_PORT=8080
 
-# Health check for Railway
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+# Copy virtual environment from builder
+COPY --from=builder --chown=mcpuser:mcpuser /app/.venv /app/.venv
 
-# Railway sets PORT automatically, but default to 8000
-EXPOSE ${PORT:-8000}
+# Set work directory
+WORKDIR /app
 
+# Copy application code
+COPY --chown=mcpuser:mcpuser . .
+
+# Create necessary directories with correct permissions
+RUN mkdir -p /app/logs /app/data /app/temp /app/cache \
+    && chown -R mcpuser:mcpuser /app \
+    && chmod -R 755 /app
+
+# Create docs directory for Python documentation
+RUN mkdir -p /app/docs/python_manuals \
+    && chown -R mcpuser:mcpuser /app/docs \
+    && chmod -R 755 /app/docs
+
+# Switch to non-root user
+USER mcpuser
+
+# Install the application
+RUN python -m pip install --no-deps -e .
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:$HTTP_PORT/health || exit 1
+
+# Expose port
+EXPOSE 8080
+
+# Default command
+CMD ["python", "-m", "mcp_server.server"]
+
+# Alternative: Use Gunicorn for production (uncomment to use)
+# CMD ["gunicorn", "-c", "production-config/gunicorn.conf.py", "mcp_server.server:http_app"]
+
+# Stage 3: Development (optional)
+FROM production as development
+
+# Switch back to root for development dependencies
+USER root
+
+# Install development dependencies
+RUN apt-get update && apt-get install -y \
+    vim \
+    htop \
+    strace \
+    lsof \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy development virtual environment with dev dependencies
+COPY --from=builder /app/.venv /app/.venv
+
+# Install dev dependencies
+USER mcpuser
+RUN /app/.venv/bin/poetry install --with dev
+
+# Set development environment
+ENV ENVIRONMENT=development \
+    DEVELOPMENT_MODE=true \
+    AUTO_RELOAD=true \
+    LOG_LEVEL=debug
+
+# Development command
 CMD ["python", "-m", "mcp_server.server"]

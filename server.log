@@ -1,0 +1,9 @@
+2025-09-07 06:33:30,126 - mcp_server - INFO - 🔧 Starting Python MCP Server in DEVELOPMENT mode
+[09/07/25 06:33:30] INFO     🔧 Starting Python MCP Server in DEVELOPMENT mode                          server.py:1058
+2025-09-07 06:33:30,143 - mcp_server - INFO - 📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP
+                    INFO     📡 Protocols: HTTP REST API + WebSocket MCP + stdin/stdout MCP             server.py:1059
+WARNING:  You must pass the application as an import string to enable 'reload' or 'workers'.
+2025-09-07 06:33:30,175 - mcp_server - INFO - Started HTTP server on http://localhost:8080
+                    INFO     Started HTTP server on http://localhost:8080                               server.py:1064
+2025-09-07 06:33:30,246 - mcp_server - INFO - Starting MCP server...
+                    INFO     Starting MCP server...                                                     server.py:1067
