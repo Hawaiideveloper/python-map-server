@@ -30,8 +30,8 @@ WORKDIR /app
 # Copy Poetry files
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies
-RUN poetry install --only=main --no-root && rm -rf $POETRY_CACHE_DIR
+# Install dependencies and create virtual environment
+RUN poetry install --only=main && rm -rf $POETRY_CACHE_DIR
 
 # Stage 2: Production
 FROM python:3.12-slim as production
@@ -50,7 +50,7 @@ LABEL org.opencontainers.image.title="Python MCP Server" \
       org.opencontainers.image.vendor="Python MCP Server" \
       org.opencontainers.image.licenses="MIT"
 
-# Install runtime dependencies only
+# Install runtime dependencies and build tools
 RUN apt-get update && apt-get install -y \
     # Required for psutil and system monitoring
     procps \
@@ -60,6 +60,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     # Required for Redis connections
     redis-tools \
+    # Required for building Python packages
+    gcc \
+    g++ \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -70,13 +74,14 @@ RUN groupadd -r mcpuser && useradd -r -g mcpuser -u 1000 mcpuser
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app \
-    PATH="/app/.venv/bin:$PATH" \
+    PATH="/usr/local/bin:$PATH" \
     ENVIRONMENT=production \
     HTTP_HOST=0.0.0.0 \
     HTTP_PORT=8080
 
-# Copy virtual environment from builder
-COPY --from=builder --chown=mcpuser:mcpuser /app/.venv /app/.venv
+# Copy Poetry files and install dependencies directly
+COPY --chown=mcpuser:mcpuser pyproject.toml poetry.lock ./
+RUN pip install poetry==1.7.1 && poetry config virtualenvs.create false && poetry install --only=main
 
 # Set work directory
 WORKDIR /app
