@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-mcp-server
+  namespace: default
+  labels:
+    app: python-mcp-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: python-mcp-server
+  template:
+    metadata:
+      labels:
+        app: python-mcp-server
+    spec:
+      containers:
+      - name: python-mcp-server
+        image: hawaiideveloper/python-mcp-server:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: HTTP_PORT
+          value: "8080"
+        - name: HTTP_HOST
+          value: "0.0.0.0"
+        - name: PYTHONPATH
+          value: "/app/src"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: data
+          mountPath: /app/data
+        - name: cache
+          mountPath: /app/cache
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: data
+        emptyDir: {}
+      - name: cache
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-mcp-server-service
+  namespace: default
+spec:
+  selector:
+    app: python-mcp-server
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-mcp-server-config
+  namespace: default
+data:
+  ENVIRONMENT: "production"
+  HTTP_PORT: "8080"
+  HTTP_HOST: "0.0.0.0"
+  PYTHONPATH: "/app/src"
