@@ -166,12 +166,13 @@ cython_debug/
 *-real.*
 *-actual.*
 
-# Sensitive configuration files  
-cursor-mcp-config.json
-cursor-websocket-mcp.json
-cursor-final-config.json
+# Sensitive configuration files (any cursor config files)
+cursor*.json
+cursor*.md
 mcp-websocket-bridge.py
-cursor-setup-instructions.md
+*-setup-instructions.md
+*-config.json
+*-mcp-*.json
 
 # Keep only example files in examples/
 !examples/**/*.example.*
