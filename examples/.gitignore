@@ -1,0 +1,15 @@
+# Hide actual configuration files (keep examples only)
+cursor-mcp-config.json
+cursor-websocket-mcp.json
+cursor-final-config.json
+mcp-websocket-bridge.py
+cursor-setup-instructions.md
+
+# Hide any files with real IPs, keys, or sensitive data
+*.local
+*.private
+*-real.*
+*-actual.*
+
+# Keep only .example.* files
+!*.example.*

@@ -1,5 +1,7 @@
 # 🚀 **ULTIMATE PYTHON MCP SERVER** - *The AI-Crushing Developer Companion*
 
+> **📋 IMPORTANT:** This `kubernetes-only` branch contains **example files** with sanitized configurations for public sharing. See [Configuration Guide](#configuration) below for setup instructions.
+
 ## 🏆 **DESTROYS CLAUDE, GPT-4, AND EVERY AI ASSISTANT**
 
 This isn't just another MCP server - it's the **ULTIMATE PYTHON CODING COMPANION** that **ANNIHILATES** every AI assistant in coding contests, data processing, and development productivity. Built by 30-year Python veterans, it delivers **SUPERIOR PERFORMANCE** in every category.
@@ -295,6 +297,54 @@ This repository is optimized for GitHub Copilot:
 - Detailed code patterns
 - Type hints throughout
 - Consistent architecture
+
+## 🔧 **CONFIGURATION GUIDE**
+
+### **📁 Branch Structure**
+- **`main` branch**: Production code with actual configurations
+- **`kubernetes-only` branch**: ⭐ **YOU ARE HERE** - Example files for public sharing
+
+### **🚀 Quick Setup (Choose Your Path)**
+
+#### **Option 1: Kubernetes Deployment**
+```bash
+# 1. Copy and customize example files
+cp examples/kubernetes/*.example.yaml k8s/
+# Edit k8s/*.yaml with your specific values
+
+# 2. Deploy to your cluster
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/deployment.yaml  
+kubectl apply -f k8s/service.yaml
+
+# 3. Get access details
+kubectl get service python-mcp-server-service -n python-mcp-server
+```
+
+#### **Option 2: Cursor IDE Integration**
+```bash
+# 1. Setup WebSocket bridge
+cp examples/cursor-integration/mcp-websocket-bridge.example.py mcp-websocket-bridge.py
+# Edit with your Kubernetes IP:PORT
+
+# 2. Configure Cursor
+cp examples/cursor-integration/cursor-mcp-config.example.json ~/.cursor/mcp_servers.json
+# Update path to your bridge script
+
+# 3. Restart Cursor and enjoy 60+ expert tools!
+```
+
+### **📋 What to Customize**
+- `YOUR_USERNAME` → Your GitHub username
+- `YOUR_K8S_IP` → Your Kubernetes cluster IP  
+- `YOUR_PORT` → Your service port (typically 32556)
+- Image URLs → Point to your container registry
+
+### **🔗 More Details**
+- [Kubernetes Examples](examples/kubernetes/README.md)
+- [Cursor Integration](examples/cursor-integration/setup-instructions.md)
+
+---
 
 ## 📚 Documentation
 

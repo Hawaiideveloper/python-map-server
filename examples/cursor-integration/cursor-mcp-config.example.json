@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "python-expert": {
+      "command": "python3",
+      "args": ["/path/to/your/python-mcp-server/mcp-websocket-bridge.py"],
+      "name": "Python Expert (Kubernetes)",
+      "description": "Ultimate Python MCP Server - 60+ Expert Tools via WebSocket"
+    }
+  }
+}
