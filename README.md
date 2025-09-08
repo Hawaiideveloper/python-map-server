@@ -3,6 +3,7 @@
 ## 📋 **TABLE OF CONTENTS**
 
 - [🏆 Overview](#-destroys-claude-gpt-4-and-every-ai-assistant)
+- [📊 Quick Branch Selection](#-quick-branch-selection---choose-your-deployment-strategy)
 - [⚡ Instant Superiority Showcase](#-instant-superiority-showcase)
 - [📦 Supported Libraries](#-supported-libraries-100)
 - [🚀 Quick Start](#-quick-start)
@@ -23,6 +24,24 @@
 ## 🏆 **DESTROYS CLAUDE, GPT-4, AND EVERY AI ASSISTANT**
 
 This isn't just another MCP server - it's the **ULTIMATE PYTHON CODING COMPANION** that **ANNIHILATES** every AI assistant in coding contests, data processing, and development productivity. Built by 30-year Python veterans, it delivers **SUPERIOR PERFORMANCE** in every category.
+
+## 📊 **QUICK BRANCH SELECTION** - *Choose Your Deployment Strategy*
+
+| **Feature** | **main** | **docker-only** | **kubernetes-only** |
+|-------------|----------|-----------------|-------------------|
+| **Core MCP Server** | ✅ | ✅ | ✅ |
+| **AI/ML Tools** | ✅ | ✅ | ✅ |
+| **Docker Support** | ✅ | ✅ | ✅ |
+| **Kubernetes Manifests** | ❌ | ❌ | ✅ |
+| **Deployment Scripts** | ❌ | ❌ | ✅ |
+| **Production Monitoring** | ❌ | ❌ | ✅ |
+| **MCP Client Configs** | ❌ | ❌ | ✅ |
+| **Error Resolution Docs** | ❌ | ❌ | ✅ |
+
+### **🚀 Quick Start Guide**
+- **Local Development**: Use `main` branch
+- **Docker Deployment**: Use `docker-only` branch  
+- **Kubernetes Production**: Use `kubernetes-only` branch
 
 ## ⚡ **INSTANT SUPERIORITY SHOWCASE**
 
@@ -379,18 +398,9 @@ git checkout kubernetes-only
 git branch -a
 ```
 
-### **📊 Branch Comparison**
+### **📊 Detailed Branch Information**
 
-| **Feature** | **main** | **docker-only** | **kubernetes-only** |
-|-------------|----------|-----------------|-------------------|
-| **Core MCP Server** | ✅ | ✅ | ✅ |
-| **AI/ML Tools** | ✅ | ✅ | ✅ |
-| **Docker Support** | ✅ | ✅ | ✅ |
-| **Kubernetes Manifests** | ❌ | ❌ | ✅ |
-| **Deployment Scripts** | ❌ | ❌ | ✅ |
-| **Production Monitoring** | ❌ | ❌ | ✅ |
-| **MCP Client Configs** | ❌ | ❌ | ✅ |
-| **Error Resolution Docs** | ❌ | ❌ | ✅ |
+For comprehensive branch details, see the [Repository Branches](#-repository-branches) section below.
 
 ## 🤖 GitHub Copilot Ready
 
