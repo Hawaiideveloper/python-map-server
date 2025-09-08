@@ -1,5 +1,25 @@
 # 🚀 **ULTIMATE PYTHON MCP SERVER** - *The AI-Crushing Developer Companion*
 
+## 📋 **TABLE OF CONTENTS**
+
+- [🏆 Overview](#-destroys-claude-gpt-4-and-every-ai-assistant)
+- [⚡ Instant Superiority Showcase](#-instant-superiority-showcase)
+- [📦 Supported Libraries](#-supported-libraries-100)
+- [🚀 Quick Start](#-quick-start)
+- [🔧 Configuration](#-configuration)
+- [🛠️ API Endpoints](#️-api-endpoints)
+- [💡 Usage Examples](#-usage-examples)
+- [🏗️ Architecture](#️-architecture)
+- [🔐 Security Features](#-security-features)
+- [📊 Monitoring](#-monitoring)
+- [🚀 Development](#-development)
+- [🌿 Repository Branches](#-repository-branches)
+- [🤖 GitHub Copilot Ready](#-github-copilot-ready)
+- [📚 Documentation](#-documentation)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
+
 ## 🏆 **DESTROYS CLAUDE, GPT-4, AND EVERY AI ASSISTANT**
 
 This isn't just another MCP server - it's the **ULTIMATE PYTHON CODING COMPANION** that **ANNIHILATES** every AI assistant in coding contests, data processing, and development productivity. Built by 30-year Python veterans, it delivers **SUPERIOR PERFORMANCE** in every category.
@@ -287,6 +307,90 @@ poetry run pytest tests/           # Run all tests
 poetry run pytest --cov=src       # Run with coverage
 poetry run pytest -v tests/test_ai_tools.py  # Specific module
 ```
+
+## 🌿 **REPOSITORY BRANCHES**
+
+This repository uses a **multi-branch strategy** to support different deployment scenarios and development workflows:
+
+### **🔗 `main` Branch** - *Core Application*
+- **Purpose**: Primary development branch with stable, production-ready code
+- **Contains**: Core MCP server application, essential tools, and critical fixes
+- **Key Features**:
+  - ✅ Complete Python MCP server implementation
+  - ✅ 100+ AI/ML tools and integrations
+  - ✅ Comprehensive API endpoints
+  - ✅ Security features and sandboxing
+  - ✅ Critical bug fixes and port configuration
+  - ✅ Updated documentation and changelog
+- **Deployment**: Local development, Docker containers, basic production
+- **Status**: ✅ **STABLE** - Ready for production use
+
+### **🐳 `docker-only` Branch** - *Docker-Focused Deployment*
+- **Purpose**: Specialized branch for Docker-based deployments and containerization
+- **Contains**: Docker-specific configurations, multi-stage builds, and container optimizations
+- **Key Features**:
+  - ✅ Optimized Dockerfile with multi-stage builds
+  - ✅ Docker Compose configurations
+  - ✅ Container health checks and monitoring
+  - ✅ Volume management and data persistence
+  - ✅ Docker-specific environment variables
+  - ✅ GitHub Container Registry (GHCR) integration
+- **Deployment**: Docker containers, Docker Compose, containerized environments
+- **Status**: ✅ **STABLE** - Production-ready containerization
+
+### **☸️ `kubernetes-only` Branch** - *Kubernetes Production Deployment*
+- **Purpose**: Complete Kubernetes deployment infrastructure for enterprise production
+- **Contains**: Full Kubernetes manifests, deployment scripts, and production configurations
+- **Key Features**:
+  - ✅ **Production Kubernetes Manifests**: 3-replica deployment with LoadBalancer
+  - ✅ **Comprehensive Deployment Scripts**: 50+ automation scripts for all scenarios
+  - ✅ **Debugging & Monitoring Tools**: Complete troubleshooting and diagnostics
+  - ✅ **MCP Client Configurations**: Ready-to-use configs for VSCode, Claude Desktop, Cursor IDE
+  - ✅ **GitHub Container Registry Integration**: Secure image management
+  - ✅ **Error Resolution Guide**: Complete documentation of common deployment issues
+  - ✅ **Resource Management**: CPU/memory limits, health checks, rolling updates
+- **Deployment**: Kubernetes clusters, enterprise production environments
+- **Status**: ✅ **PRODUCTION READY** - Fully deployed and operational
+
+### **🔧 Branch Selection Guide**
+
+| **Use Case** | **Recommended Branch** | **Why** |
+|--------------|------------------------|---------|
+| **Local Development** | `main` | Core application with all features |
+| **Docker Deployment** | `docker-only` | Optimized containerization |
+| **Kubernetes Production** | `kubernetes-only` | Complete K8s infrastructure |
+| **Learning/Testing** | `main` | Stable, well-documented codebase |
+| **Enterprise Deployment** | `kubernetes-only` | Production-ready with monitoring |
+| **CI/CD Pipeline** | `main` + `kubernetes-only` | Core app + deployment automation |
+
+### **🚀 Quick Branch Switching**
+
+```bash
+# Switch to main branch (core application)
+git checkout main
+
+# Switch to Docker-focused branch
+git checkout docker-only
+
+# Switch to Kubernetes production branch
+git checkout kubernetes-only
+
+# See all available branches
+git branch -a
+```
+
+### **📊 Branch Comparison**
+
+| **Feature** | **main** | **docker-only** | **kubernetes-only** |
+|-------------|----------|-----------------|-------------------|
+| **Core MCP Server** | ✅ | ✅ | ✅ |
+| **AI/ML Tools** | ✅ | ✅ | ✅ |
+| **Docker Support** | ✅ | ✅ | ✅ |
+| **Kubernetes Manifests** | ❌ | ❌ | ✅ |
+| **Deployment Scripts** | ❌ | ❌ | ✅ |
+| **Production Monitoring** | ❌ | ❌ | ✅ |
+| **MCP Client Configs** | ❌ | ❌ | ✅ |
+| **Error Resolution Docs** | ❌ | ❌ | ✅ |
 
 ## 🤖 GitHub Copilot Ready
 
